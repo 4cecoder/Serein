@@ -2420,6 +2420,7 @@ impl Desktop {
 		self.downloads.cancel();
 		self.audio.stop();
 		self.video.stop();
+		self.video.cancel_posters();
 		self.voice.stop();
 		self.messaging.camera_test_requested = false;
 		self.messaging.camera_test_texture = None;
@@ -6761,6 +6762,19 @@ impl eframe::App for Desktop {
 			if let Some(command) = player.command.take() {
 				self.video.command(
 					command,
+					player,
+					self.runtime.handle(),
+					&ctx,
+					self.fixture_only || self.state.demo,
+				);
+			}
+			// Posters download attachments too, so they follow the playback session gate.
+			if !self.state.demo && self.state.auth != AuthState::Authenticated {
+				player.poster_queue.clear();
+			} else if !player.poster_queue.is_empty() {
+				let queue = std::mem::take(&mut player.poster_queue);
+				self.video.posters(
+					queue,
 					player,
 					self.runtime.handle(),
 					&ctx,
