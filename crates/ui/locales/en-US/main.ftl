@@ -4639,3 +4639,165 @@ profiles-activity-empty = No activity shared.
 profiles-mutuals-empty = Nothing to show here.
 
 reading-double-click-reaction = Double-click reaction
+
+## crates/platform/src/app_menu.rs
+# Context: macos_menu_bar
+app-menu-about = About Serein
+# Context: macos_menu_bar
+app-menu-updates = Check for Updates…
+# Context: macos_menu_bar
+app-menu-settings = Settings…
+# Context: macos_menu_bar
+app-menu-services = Services
+# Context: macos_menu_bar
+app-menu-hide = Hide Serein
+# Context: macos_menu_bar
+app-menu-hide-others = Hide Others
+# Context: macos_menu_bar
+app-menu-show-all = Show All
+# Context: macos_menu_bar
+app-menu-quit = Quit Serein
+# Context: macos_menu_bar
+app-menu-file = File
+# Context: macos_menu_bar
+app-menu-close-window = Close Window
+# Context: macos_menu_bar
+app-menu-edit = Edit
+# Context: macos_menu_bar
+app-menu-undo = Undo
+# Context: macos_menu_bar
+app-menu-redo = Redo
+# Context: macos_menu_bar
+app-menu-cut = Cut
+# Context: macos_menu_bar
+app-menu-copy = Copy
+# Context: macos_menu_bar
+app-menu-paste = Paste
+# Context: macos_menu_bar
+app-menu-select-all = Select All
+# Context: macos_menu_bar
+app-menu-emoji = Emoji & Symbols
+# Context: macos_menu_bar
+app-menu-view = View
+# Context: macos_menu_bar
+app-menu-actual-size = Actual Size
+# Context: macos_menu_bar
+app-menu-zoom-in = Zoom In
+# Context: macos_menu_bar
+app-menu-zoom-out = Zoom Out
+# Context: macos_menu_bar
+app-menu-full-screen = Enter Full Screen
+# Context: macos_menu_bar
+app-menu-window = Window
+# Context: macos_menu_bar
+app-menu-minimize = Minimize
+# Context: macos_menu_bar
+app-menu-zoom = Zoom
+# Context: macos_menu_bar
+app-menu-bring-all-to-front = Bring All to Front
+# Context: macos_menu_bar
+app-menu-help = Help
+# Context: macos_menu_bar
+app-menu-github = Serein on GitHub
+# Context: macos_menu_bar
+app-menu-report-issue = Report an Issue…
+
+## crates/model/src/system_messages.rs
+# Context: system_message
+system-message-a-member = a member
+# Context: system_message
+system-message-added = { $actor } added { $target } to the conversation.
+# Context: system_message
+system-message-left = { $actor } left the conversation.
+# Context: system_message
+system-message-removed = { $actor } removed { $target } from the conversation.
+# Context: system_message
+system-message-call = { $actor } started a call.
+# Context: system_message
+system-message-channel-name = { $actor } changed the channel name.
+# Context: system_message
+system-message-channel-name-value = { $actor } changed the channel name: { $value }
+# Context: system_message
+system-message-channel-icon = { $actor } changed the channel icon.
+# Context: system_message
+system-message-pinned = { $actor } pinned a message to this channel.
+# Context: system_message
+system-message-joined = Welcome, { $actor }! Joined the server.
+# Context: system_message
+system-message-boosted = { $actor } boosted the server!
+# Context: system_message
+system-message-boosted-level = { $actor } boosted the server! The server reached level { $level }.
+# Context: system_message
+system-message-channel-follow = { $actor } added a channel follow.
+# Context: system_message
+system-message-discovery-disqualified = This server is no longer eligible for Server Discovery.
+# Context: system_message
+system-message-discovery-requalified = This server is eligible for Server Discovery again.
+# Context: system_message
+system-message-discovery-warning = Server Discovery eligibility warning.
+# Context: system_message
+system-message-discovery-final-warning = Final Server Discovery eligibility warning.
+# Context: system_message
+system-message-thread = { $actor } started a thread.
+# Context: system_message
+system-message-thread-value = { $actor } started a thread: { $value }
+# Context: system_message
+system-message-thread-starter = Thread started from an earlier message.
+# Context: system_message
+system-message-invite-reminder = Invite reminder · Invite people to this server.
+# Context: system_message
+system-message-automod = AutoMod action.
+# Context: system_message
+system-message-role-subscription = { $actor } purchased or renewed a role subscription.
+# Context: system_message
+system-message-premium-upsell = Premium subscription offer.
+# Context: system_message
+system-message-stage-start = { $actor } started a Stage.
+# Context: system_message
+system-message-stage-end = The Stage ended.
+# Context: system_message
+system-message-stage-speaker = { $actor } became a Stage speaker.
+# Context: system_message
+system-message-stage-raise-hand = { $actor } requested to speak.
+# Context: system_message
+system-message-stage-topic = { $actor } changed the Stage topic.
+# Context: system_message
+system-message-application-subscription = Server application premium subscription.
+# Context: system_message
+system-message-raid-alert-enabled = Server alert mode enabled.
+# Context: system_message
+system-message-raid-alert-disabled = Server alert mode disabled.
+# Context: system_message
+system-message-raid-report = A server raid was reported.
+# Context: system_message
+system-message-false-alarm = A server incident was reported as a false alarm.
+# Context: system_message
+system-message-purchase = Purchase notification.
+# Context: system_message
+system-message-poll-closed = { $actor }'s poll { $question } has closed.
+# Context: system_message
+system-message-poll-result = Poll results.
+# Context: system_message
+system-message-stream-hd = { $actor } upgraded the stream to HD.
+# Context: system_message
+system-message-report-deleted = { $actor } deleted a reported message.
+# Context: system_message
+system-message-timed-out = { $actor } timed out { $target }.
+# Context: system_message
+system-message-kicked = { $actor } kicked { $target }.
+# Context: system_message
+system-message-banned = { $actor } banned { $target }.
+# Context: system_message
+system-message-report-resolved = { $actor } resolved a report.
+# Context: system_message
+system-message-voice-hangout = { $actor } started a voice hangout.
+# Context: system_message
+system-message-friend-accepted = { $actor } accepted your friend request.
+
+## crates/ui/src/lib.rs composer
+# Context: composer_placeholder
+composer-placeholder = Message
+# Context: composer_placeholder
+composer-placeholder-channel = Message #{ $channel }
+# Context: composer_placeholder
+composer-placeholder-direct = Message @{ $name }

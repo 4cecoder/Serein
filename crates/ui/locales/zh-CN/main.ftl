@@ -4654,3 +4654,165 @@ profiles-activity-empty = 暂无共享活动。
 profiles-mutuals-empty = 这里没有可显示的内容。
 
 reading-double-click-reaction = 双击回应
+
+## crates/platform/src/app_menu.rs
+# Context: macos_menu_bar
+app-menu-about = 关于 Serein
+# Context: macos_menu_bar
+app-menu-updates = 检查更新…
+# Context: macos_menu_bar
+app-menu-settings = 设置…
+# Context: macos_menu_bar
+app-menu-services = 服务
+# Context: macos_menu_bar
+app-menu-hide = 隐藏 Serein
+# Context: macos_menu_bar
+app-menu-hide-others = 隐藏其他
+# Context: macos_menu_bar
+app-menu-show-all = 全部显示
+# Context: macos_menu_bar
+app-menu-quit = 退出 Serein
+# Context: macos_menu_bar
+app-menu-file = 文件
+# Context: macos_menu_bar
+app-menu-close-window = 关闭窗口
+# Context: macos_menu_bar
+app-menu-edit = 编辑
+# Context: macos_menu_bar
+app-menu-undo = 撤销
+# Context: macos_menu_bar
+app-menu-redo = 重做
+# Context: macos_menu_bar
+app-menu-cut = 剪切
+# Context: macos_menu_bar
+app-menu-copy = 拷贝
+# Context: macos_menu_bar
+app-menu-paste = 粘贴
+# Context: macos_menu_bar
+app-menu-select-all = 全选
+# Context: macos_menu_bar
+app-menu-emoji = 表情与符号
+# Context: macos_menu_bar
+app-menu-view = 显示
+# Context: macos_menu_bar
+app-menu-actual-size = 实际大小
+# Context: macos_menu_bar
+app-menu-zoom-in = 放大
+# Context: macos_menu_bar
+app-menu-zoom-out = 缩小
+# Context: macos_menu_bar
+app-menu-full-screen = 进入全屏幕
+# Context: macos_menu_bar
+app-menu-window = 窗口
+# Context: macos_menu_bar
+app-menu-minimize = 最小化
+# Context: macos_menu_bar
+app-menu-zoom = 缩放
+# Context: macos_menu_bar
+app-menu-bring-all-to-front = 前置全部窗口
+# Context: macos_menu_bar
+app-menu-help = 帮助
+# Context: macos_menu_bar
+app-menu-github = GitHub 上的 Serein
+# Context: macos_menu_bar
+app-menu-report-issue = 报告问题…
+
+## crates/model/src/system_messages.rs
+# Context: system_message
+system-message-a-member = 一位成员
+# Context: system_message
+system-message-added = { $actor } 将 { $target } 添加到了对话中。
+# Context: system_message
+system-message-left = { $actor } 离开了对话。
+# Context: system_message
+system-message-removed = { $actor } 将 { $target } 移出了对话。
+# Context: system_message
+system-message-call = { $actor } 发起了通话。
+# Context: system_message
+system-message-channel-name = { $actor } 更改了频道名称。
+# Context: system_message
+system-message-channel-name-value = { $actor } 更改了频道名称：{ $value }
+# Context: system_message
+system-message-channel-icon = { $actor } 更改了频道图标。
+# Context: system_message
+system-message-pinned = { $actor } 在此频道中置顶了一条消息。
+# Context: system_message
+system-message-joined = 欢迎 { $actor }！已加入服务器。
+# Context: system_message
+system-message-boosted = { $actor } 助力了服务器！
+# Context: system_message
+system-message-boosted-level = { $actor } 助力了服务器！服务器已达到 { $level } 级。
+# Context: system_message
+system-message-channel-follow = { $actor } 添加了频道关注。
+# Context: system_message
+system-message-discovery-disqualified = 此服务器已不再符合服务器发现的条件。
+# Context: system_message
+system-message-discovery-requalified = 此服务器再次符合服务器发现的条件。
+# Context: system_message
+system-message-discovery-warning = 服务器发现资格警告。
+# Context: system_message
+system-message-discovery-final-warning = 服务器发现资格最终警告。
+# Context: system_message
+system-message-thread = { $actor } 发起了子区。
+# Context: system_message
+system-message-thread-value = { $actor } 发起了子区：{ $value }
+# Context: system_message
+system-message-thread-starter = 从先前消息发起的子区。
+# Context: system_message
+system-message-invite-reminder = 邀请提醒 · 邀请好友加入此服务器。
+# Context: system_message
+system-message-automod = AutoMod 操作。
+# Context: system_message
+system-message-role-subscription = { $actor } 购买或续订了身份组订阅。
+# Context: system_message
+system-message-premium-upsell = 高级订阅优惠。
+# Context: system_message
+system-message-stage-start = { $actor } 开启了舞台。
+# Context: system_message
+system-message-stage-end = 舞台已结束。
+# Context: system_message
+system-message-stage-speaker = { $actor } 成为了舞台发言人。
+# Context: system_message
+system-message-stage-raise-hand = { $actor } 请求发言。
+# Context: system_message
+system-message-stage-topic = { $actor } 更改了舞台话题。
+# Context: system_message
+system-message-application-subscription = 服务器应用高级订阅。
+# Context: system_message
+system-message-raid-alert-enabled = 已启用服务器警报模式。
+# Context: system_message
+system-message-raid-alert-disabled = 已停用服务器警报模式。
+# Context: system_message
+system-message-raid-report = 有人举报了服务器袭击。
+# Context: system_message
+system-message-false-alarm = 服务器事件已被举报为误报。
+# Context: system_message
+system-message-purchase = 购买通知。
+# Context: system_message
+system-message-poll-closed = { $actor } 的投票“{ $question }”已结束。
+# Context: system_message
+system-message-poll-result = 投票结果。
+# Context: system_message
+system-message-stream-hd = { $actor } 将直播升级为高清。
+# Context: system_message
+system-message-report-deleted = { $actor } 删除了一条被举报的消息。
+# Context: system_message
+system-message-timed-out = { $actor } 将 { $target } 禁言。
+# Context: system_message
+system-message-kicked = { $actor } 将 { $target } 踢出。
+# Context: system_message
+system-message-banned = { $actor } 封禁了 { $target }。
+# Context: system_message
+system-message-report-resolved = { $actor } 处理了一条举报。
+# Context: system_message
+system-message-voice-hangout = { $actor } 开启了语音聚会。
+# Context: system_message
+system-message-friend-accepted = { $actor } 接受了你的好友请求。
+
+## crates/ui/src/lib.rs composer
+# Context: composer_placeholder
+composer-placeholder = 消息
+# Context: composer_placeholder
+composer-placeholder-channel = 给 #{ $channel } 发消息
+# Context: composer_placeholder
+composer-placeholder-direct = 给 @{ $name } 发消息

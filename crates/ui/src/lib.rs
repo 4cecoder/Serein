@@ -3243,12 +3243,18 @@ impl MessagingUi {
 				)
 			});
 		let placeholder = state.channel(channel).map_or_else(
-			|| "Message".to_owned(),
+			|| crate::i18n::translate("composer-placeholder"),
 			|c| {
 				if c.guild.is_some() {
-					format!("Message #{}", c.name)
+					crate::i18n::translate_args(
+						"composer-placeholder-channel",
+						&[("channel", &c.name)],
+					)
 				} else {
-					format!("Message @{}", state.conversation_name(c))
+					crate::i18n::translate_args(
+						"composer-placeholder-direct",
+						&[("name", state.conversation_name(c))],
+					)
 				}
 			},
 		);
@@ -4931,7 +4937,7 @@ impl MessagingUi {
 			let name = state
 				.timeline
 				.get(message)
-				.map(|m| thread_create::suggested_name(&m.display_text()))
+				.map(|m| thread_create::suggested_name(&crate::i18n::message_text(m)))
 				.unwrap_or_default();
 			self.thread_create.open(channel, Some(message), name);
 		}

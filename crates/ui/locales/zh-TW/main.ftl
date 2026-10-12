@@ -4654,3 +4654,165 @@ profiles-activity-empty = 尚無分享的活動。
 profiles-mutuals-empty = 這裡沒有可顯示的內容。
 
 reading-double-click-reaction = 雙擊回應
+
+## crates/platform/src/app_menu.rs
+# Context: macos_menu_bar
+app-menu-about = 關於 Serein
+# Context: macos_menu_bar
+app-menu-updates = 檢查更新項目…
+# Context: macos_menu_bar
+app-menu-settings = 設定…
+# Context: macos_menu_bar
+app-menu-services = 服務
+# Context: macos_menu_bar
+app-menu-hide = 隱藏 Serein
+# Context: macos_menu_bar
+app-menu-hide-others = 隱藏其他
+# Context: macos_menu_bar
+app-menu-show-all = 顯示全部
+# Context: macos_menu_bar
+app-menu-quit = 結束 Serein
+# Context: macos_menu_bar
+app-menu-file = 檔案
+# Context: macos_menu_bar
+app-menu-close-window = 關閉視窗
+# Context: macos_menu_bar
+app-menu-edit = 編輯
+# Context: macos_menu_bar
+app-menu-undo = 還原
+# Context: macos_menu_bar
+app-menu-redo = 重做
+# Context: macos_menu_bar
+app-menu-cut = 剪下
+# Context: macos_menu_bar
+app-menu-copy = 拷貝
+# Context: macos_menu_bar
+app-menu-paste = 貼上
+# Context: macos_menu_bar
+app-menu-select-all = 全選
+# Context: macos_menu_bar
+app-menu-emoji = 表情符號與符號
+# Context: macos_menu_bar
+app-menu-view = 顯示方式
+# Context: macos_menu_bar
+app-menu-actual-size = 實際大小
+# Context: macos_menu_bar
+app-menu-zoom-in = 放大
+# Context: macos_menu_bar
+app-menu-zoom-out = 縮小
+# Context: macos_menu_bar
+app-menu-full-screen = 進入全螢幕
+# Context: macos_menu_bar
+app-menu-window = 視窗
+# Context: macos_menu_bar
+app-menu-minimize = 縮到最小
+# Context: macos_menu_bar
+app-menu-zoom = 縮放
+# Context: macos_menu_bar
+app-menu-bring-all-to-front = 將此程式所有視窗移至最前
+# Context: macos_menu_bar
+app-menu-help = 輔助說明
+# Context: macos_menu_bar
+app-menu-github = GitHub 上的 Serein
+# Context: macos_menu_bar
+app-menu-report-issue = 回報問題…
+
+## crates/model/src/system_messages.rs
+# Context: system_message
+system-message-a-member = 一位成員
+# Context: system_message
+system-message-added = { $actor } 將 { $target } 加入了對話。
+# Context: system_message
+system-message-left = { $actor } 離開了對話。
+# Context: system_message
+system-message-removed = { $actor } 將 { $target } 移出了對話。
+# Context: system_message
+system-message-call = { $actor } 發起了通話。
+# Context: system_message
+system-message-channel-name = { $actor } 變更了頻道名稱。
+# Context: system_message
+system-message-channel-name-value = { $actor } 變更了頻道名稱：{ $value }
+# Context: system_message
+system-message-channel-icon = { $actor } 變更了頻道圖示。
+# Context: system_message
+system-message-pinned = { $actor } 在此頻道釘選了一則訊息。
+# Context: system_message
+system-message-joined = 歡迎 { $actor }！已加入伺服器。
+# Context: system_message
+system-message-boosted = { $actor } 加成了伺服器！
+# Context: system_message
+system-message-boosted-level = { $actor } 加成了伺服器！伺服器已達到等級 { $level }。
+# Context: system_message
+system-message-channel-follow = { $actor } 新增了頻道追蹤。
+# Context: system_message
+system-message-discovery-disqualified = 此伺服器已不再符合伺服器探索的資格。
+# Context: system_message
+system-message-discovery-requalified = 此伺服器再次符合伺服器探索的資格。
+# Context: system_message
+system-message-discovery-warning = 伺服器探索資格警告。
+# Context: system_message
+system-message-discovery-final-warning = 伺服器探索資格最終警告。
+# Context: system_message
+system-message-thread = { $actor } 發起了討論串。
+# Context: system_message
+system-message-thread-value = { $actor } 發起了討論串：{ $value }
+# Context: system_message
+system-message-thread-starter = 從先前的訊息發起的討論串。
+# Context: system_message
+system-message-invite-reminder = 邀請提醒 · 邀請朋友加入此伺服器。
+# Context: system_message
+system-message-automod = AutoMod 動作。
+# Context: system_message
+system-message-role-subscription = { $actor } 購買或續訂了身分組訂閱。
+# Context: system_message
+system-message-premium-upsell = 高級訂閱方案。
+# Context: system_message
+system-message-stage-start = { $actor } 開始了舞台。
+# Context: system_message
+system-message-stage-end = 舞台已結束。
+# Context: system_message
+system-message-stage-speaker = { $actor } 成為了舞台演講者。
+# Context: system_message
+system-message-stage-raise-hand = { $actor } 請求發言。
+# Context: system_message
+system-message-stage-topic = { $actor } 變更了舞台主題。
+# Context: system_message
+system-message-application-subscription = 伺服器應用程式高級訂閱。
+# Context: system_message
+system-message-raid-alert-enabled = 已啟用伺服器警戒模式。
+# Context: system_message
+system-message-raid-alert-disabled = 已停用伺服器警戒模式。
+# Context: system_message
+system-message-raid-report = 有人回報了伺服器突襲。
+# Context: system_message
+system-message-false-alarm = 伺服器事件已被回報為誤報。
+# Context: system_message
+system-message-purchase = 購買通知。
+# Context: system_message
+system-message-poll-closed = { $actor } 的投票「{ $question }」已結束。
+# Context: system_message
+system-message-poll-result = 投票結果。
+# Context: system_message
+system-message-stream-hd = { $actor } 將直播升級為 HD。
+# Context: system_message
+system-message-report-deleted = { $actor } 刪除了一則被檢舉的訊息。
+# Context: system_message
+system-message-timed-out = { $actor } 將 { $target } 禁言。
+# Context: system_message
+system-message-kicked = { $actor } 將 { $target } 踢出。
+# Context: system_message
+system-message-banned = { $actor } 將 { $target } 停權。
+# Context: system_message
+system-message-report-resolved = { $actor } 處理了一則檢舉。
+# Context: system_message
+system-message-voice-hangout = { $actor } 發起了語音聚會。
+# Context: system_message
+system-message-friend-accepted = { $actor } 接受了你的好友邀請。
+
+## crates/ui/src/lib.rs composer
+# Context: composer_placeholder
+composer-placeholder = 訊息
+# Context: composer_placeholder
+composer-placeholder-channel = 傳送訊息至 #{ $channel }
+# Context: composer_placeholder
+composer-placeholder-direct = 傳送訊息給 @{ $name }

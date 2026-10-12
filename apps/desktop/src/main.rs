@@ -1012,6 +1012,9 @@ struct Desktop {
 	system_theme: platform::system_theme::SystemTheme,
 	tray_error: Option<&'static str>,
 	tray_window: tray_window::State,
+	/// Native menu bar, retitled whenever the interface language changes.
+	#[cfg(target_os = "macos")]
+	app_menu: Option<(platform::app_menu::AppMenu, ui::i18n::Language)>,
 	/// Show requests from later launches and macOS Dock reopens.
 	instance: platform::single_instance::Instance,
 	/// `--demo-reply`: keeps two synthetic typists active on the selected fixture channel.
@@ -2204,6 +2207,17 @@ impl Desktop {
 			let _runtime = runtime.enter();
 			tray_window::State::default()
 		};
+		#[cfg(target_os = "macos")]
+		let app_menu = {
+			let wake = cc.egui_ctx.clone();
+			platform::app_menu::AppMenu::new(
+				window.clone(),
+				move || wake.request_repaint(),
+				ui::i18n::translate,
+			)
+			.ok()
+			.map(|menu| (menu, ui::i18n::Language::System))
+		};
 		Ok(Self {
 			proxy_auth: proxy_auth::Authentication::default(),
 			api_proxy: tokio::sync::watch::channel(None).0,
@@ -2287,6 +2301,8 @@ impl Desktop {
 			startup,
 			tray: None,
 			tray_window,
+			#[cfg(target_os = "macos")]
+			app_menu,
 			instance: Default::default(),
 			hotkeys,
 			system_theme,
@@ -2845,6 +2861,93 @@ impl Desktop {
 			.unwrap_or_else(|| self.tray_setting.status());
 		if previous_status != self.messaging.tray_status {
 			ctx.request_repaint();
+		}
+	}
+	/// Native menu bar commands. Editing commands arrive as the events their shortcuts send.
+	#[cfg(target_os = "macos")]
+	fn app_menu(&mut self, ctx: &egui::Context) {
+		use platform::app_menu::Command;
+		let Some((menu, language)) = &mut self.app_menu else {
+			return;
+		};
+		if *language != self.messaging.language {
+			*language = self.messaging.language;
+			let language = *language;
+			menu.translate(|key| language.text(key));
+		}
+		let key = |key, modifiers, pressed| egui::Event::Key {
+			key,
+			physical_key: Some(key),
+			pressed,
+			repeat: false,
+			modifiers: egui::Modifiers::MAC_CMD | egui::Modifiers::COMMAND | modifiers,
+		};
+		while let Some(command) = menu.take_command() {
+			let event = match command {
+				Command::Settings | Command::Updates => {
+					self.tray_window.show(ctx);
+					if self.state.user.is_some() {
+						if command == Command::Settings {
+							self.messaging.open_settings();
+						} else {
+							self.messaging.open_update_settings();
+						}
+					}
+					None
+				}
+				Command::Quit => {
+					self.tray_window.quit(ctx);
+					None
+				}
+				// Never quits, tray or not; that is Quit's job.
+				Command::CloseWindow => {
+					self.tray_window.hide(ctx);
+					None
+				}
+				Command::Undo => Some(key(egui::Key::Z, egui::Modifiers::NONE, true)),
+				Command::Redo => Some(key(egui::Key::Z, egui::Modifiers::SHIFT, true)),
+				Command::SelectAll => Some(key(egui::Key::A, egui::Modifiers::NONE, true)),
+				Command::Cut => Some(egui::Event::Cut),
+				Command::Copy => Some(egui::Event::Copy),
+				Command::Paste => {
+					// Like eframe's Cmd+V: the text, then the key release the composer also
+					// reads to paste files and images.
+					if let Ok(text) = arboard::Clipboard::new().and_then(|mut c| c.get_text())
+						&& !text.is_empty()
+					{
+						let text = text.replace("\r\n", "\n");
+						ctx.input_mut(|input| input.events.push(egui::Event::Paste(text)));
+					}
+					Some(key(egui::Key::V, egui::Modifiers::NONE, false))
+				}
+				Command::ZoomIn => {
+					egui::gui_zoom::zoom_in(ctx);
+					None
+				}
+				Command::ZoomOut => {
+					egui::gui_zoom::zoom_out(ctx);
+					None
+				}
+				Command::ActualSize => {
+					ctx.set_zoom_factor(1.0);
+					None
+				}
+				Command::Website => {
+					ctx.open_url(egui::OpenUrl::new_tab(
+						"https://github.com/ViceVerse-cz/Serein",
+					));
+					None
+				}
+				Command::ReportIssue => {
+					ctx.open_url(egui::OpenUrl::new_tab(
+						"https://github.com/ViceVerse-cz/Serein/issues/new/choose",
+					));
+					None
+				}
+			};
+			if let Some(event) = event {
+				ctx.input_mut(|input| input.events.push(event));
+			}
 		}
 	}
 	/// Whether closing may keep Serein running without a window. macOS apps stay in the Dock
@@ -6275,6 +6378,8 @@ impl eframe::App for Desktop {
 		if self.instance.take_show_request() {
 			self.tray_window.show(ctx);
 		}
+		#[cfg(target_os = "macos")]
+		self.app_menu(ctx);
 		self.tray_window.logic(
 			ctx,
 			self.background_available(),

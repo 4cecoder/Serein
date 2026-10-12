@@ -4560,3 +4560,165 @@ profiles-activity-empty = Brak udostępnionej aktywności.
 profiles-mutuals-empty = Nothing to show here.
 
 reading-double-click-reaction = Double-click reaction
+
+## crates/platform/src/app_menu.rs
+# Context: macos_menu_bar
+app-menu-about = Serein – informacje
+# Context: macos_menu_bar
+app-menu-updates = Sprawdź uaktualnienia…
+# Context: macos_menu_bar
+app-menu-settings = Ustawienia…
+# Context: macos_menu_bar
+app-menu-services = Usługi
+# Context: macos_menu_bar
+app-menu-hide = Ukryj Serein
+# Context: macos_menu_bar
+app-menu-hide-others = Ukryj pozostałe
+# Context: macos_menu_bar
+app-menu-show-all = Pokaż wszystko
+# Context: macos_menu_bar
+app-menu-quit = Zakończ Serein
+# Context: macos_menu_bar
+app-menu-file = Plik
+# Context: macos_menu_bar
+app-menu-close-window = Zamknij okno
+# Context: macos_menu_bar
+app-menu-edit = Edycja
+# Context: macos_menu_bar
+app-menu-undo = Cofnij
+# Context: macos_menu_bar
+app-menu-redo = Powtórz
+# Context: macos_menu_bar
+app-menu-cut = Wytnij
+# Context: macos_menu_bar
+app-menu-copy = Kopiuj
+# Context: macos_menu_bar
+app-menu-paste = Wklej
+# Context: macos_menu_bar
+app-menu-select-all = Zaznacz wszystko
+# Context: macos_menu_bar
+app-menu-emoji = Emoji i symbole
+# Context: macos_menu_bar
+app-menu-view = Widok
+# Context: macos_menu_bar
+app-menu-actual-size = Rzeczywisty rozmiar
+# Context: macos_menu_bar
+app-menu-zoom-in = Powiększ
+# Context: macos_menu_bar
+app-menu-zoom-out = Pomniejsz
+# Context: macos_menu_bar
+app-menu-full-screen = Włącz tryb pełnoekranowy
+# Context: macos_menu_bar
+app-menu-window = Okno
+# Context: macos_menu_bar
+app-menu-minimize = Minimalizuj
+# Context: macos_menu_bar
+app-menu-zoom = Powiększ/zmniejsz
+# Context: macos_menu_bar
+app-menu-bring-all-to-front = Wszystkie na wierzch
+# Context: macos_menu_bar
+app-menu-help = Pomoc
+# Context: macos_menu_bar
+app-menu-github = Serein w serwisie GitHub
+# Context: macos_menu_bar
+app-menu-report-issue = Zgłoś problem…
+
+## crates/model/src/system_messages.rs
+# Context: system_message
+system-message-a-member = członek
+# Context: system_message
+system-message-added = { $actor } dodał(a) { $target } do rozmowy.
+# Context: system_message
+system-message-left = { $actor } opuścił(a) rozmowę.
+# Context: system_message
+system-message-removed = { $actor } usunął(-ęła) { $target } z rozmowy.
+# Context: system_message
+system-message-call = { $actor } rozpoczął(-ęła) połączenie.
+# Context: system_message
+system-message-channel-name = { $actor } zmienił(a) nazwę kanału.
+# Context: system_message
+system-message-channel-name-value = { $actor } zmienił(a) nazwę kanału: { $value }
+# Context: system_message
+system-message-channel-icon = { $actor } zmienił(a) ikonę kanału.
+# Context: system_message
+system-message-pinned = { $actor } przypiął(-ęła) wiadomość na tym kanale.
+# Context: system_message
+system-message-joined = Witaj, { $actor }! Dołączył(a) do serwera.
+# Context: system_message
+system-message-boosted = { $actor } ulepszył(a) serwer!
+# Context: system_message
+system-message-boosted-level = { $actor } ulepszył(a) serwer! Serwer osiągnął poziom { $level }.
+# Context: system_message
+system-message-channel-follow = { $actor } dodał(a) obserwowanie kanału.
+# Context: system_message
+system-message-discovery-disqualified = Ten serwer nie kwalifikuje się już do Odkrywania serwerów.
+# Context: system_message
+system-message-discovery-requalified = Ten serwer ponownie kwalifikuje się do Odkrywania serwerów.
+# Context: system_message
+system-message-discovery-warning = Ostrzeżenie dotyczące kwalifikacji do Odkrywania serwerów.
+# Context: system_message
+system-message-discovery-final-warning = Ostatnie ostrzeżenie dotyczące kwalifikacji do Odkrywania serwerów.
+# Context: system_message
+system-message-thread = { $actor } rozpoczął(-ęła) wątek.
+# Context: system_message
+system-message-thread-value = { $actor } rozpoczął(-ęła) wątek: { $value }
+# Context: system_message
+system-message-thread-starter = Wątek rozpoczęty od wcześniejszej wiadomości.
+# Context: system_message
+system-message-invite-reminder = Przypomnienie o zaproszeniu · Zaproś ludzi na ten serwer.
+# Context: system_message
+system-message-automod = Działanie AutoMod.
+# Context: system_message
+system-message-role-subscription = { $actor } kupił(a) lub odnowił(a) subskrypcję roli.
+# Context: system_message
+system-message-premium-upsell = Oferta subskrypcji premium.
+# Context: system_message
+system-message-stage-start = { $actor } rozpoczął(-ęła) scenę.
+# Context: system_message
+system-message-stage-end = Scena się zakończyła.
+# Context: system_message
+system-message-stage-speaker = { $actor } przemawia teraz na scenie.
+# Context: system_message
+system-message-stage-raise-hand = { $actor } prosi o głos.
+# Context: system_message
+system-message-stage-topic = { $actor } zmienił(a) temat sceny.
+# Context: system_message
+system-message-application-subscription = Subskrypcja premium aplikacji serwera.
+# Context: system_message
+system-message-raid-alert-enabled = Tryb alarmowy serwera włączony.
+# Context: system_message
+system-message-raid-alert-disabled = Tryb alarmowy serwera wyłączony.
+# Context: system_message
+system-message-raid-report = Zgłoszono rajd na serwer.
+# Context: system_message
+system-message-false-alarm = Incydent na serwerze zgłoszono jako fałszywy alarm.
+# Context: system_message
+system-message-purchase = Powiadomienie o zakupie.
+# Context: system_message
+system-message-poll-closed = Ankieta { $question } od { $actor } została zamknięta.
+# Context: system_message
+system-message-poll-result = Wyniki ankiety.
+# Context: system_message
+system-message-stream-hd = { $actor } podniósł(-osła) jakość transmisji do HD.
+# Context: system_message
+system-message-report-deleted = { $actor } usunął(-ęła) zgłoszoną wiadomość.
+# Context: system_message
+system-message-timed-out = { $actor } nałożył(a) przerwę na { $target }.
+# Context: system_message
+system-message-kicked = { $actor } wyrzucił(a) { $target }.
+# Context: system_message
+system-message-banned = { $actor } zbanował(a) { $target }.
+# Context: system_message
+system-message-report-resolved = { $actor } rozpatrzył(a) zgłoszenie.
+# Context: system_message
+system-message-voice-hangout = { $actor } rozpoczął(-ęła) spotkanie głosowe.
+# Context: system_message
+system-message-friend-accepted = { $actor } zaakceptował(a) twoje zaproszenie do znajomych.
+
+## crates/ui/src/lib.rs composer
+# Context: composer_placeholder
+composer-placeholder = Wiadomość
+# Context: composer_placeholder
+composer-placeholder-channel = Napisz na #{ $channel }
+# Context: composer_placeholder
+composer-placeholder-direct = Napisz do @{ $name }

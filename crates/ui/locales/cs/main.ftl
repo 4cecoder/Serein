@@ -4640,3 +4640,165 @@ profiles-activity-empty = Žádná sdílená aktivita.
 profiles-mutuals-empty = Nothing to show here.
 
 reading-double-click-reaction = Double-click reaction
+
+## crates/platform/src/app_menu.rs
+# Context: macos_menu_bar
+app-menu-about = O aplikaci Serein
+# Context: macos_menu_bar
+app-menu-updates = Vyhledat aktualizace…
+# Context: macos_menu_bar
+app-menu-settings = Nastavení…
+# Context: macos_menu_bar
+app-menu-services = Služby
+# Context: macos_menu_bar
+app-menu-hide = Skrýt Serein
+# Context: macos_menu_bar
+app-menu-hide-others = Skrýt ostatní
+# Context: macos_menu_bar
+app-menu-show-all = Zobrazit vše
+# Context: macos_menu_bar
+app-menu-quit = Ukončit Serein
+# Context: macos_menu_bar
+app-menu-file = Soubor
+# Context: macos_menu_bar
+app-menu-close-window = Zavřít okno
+# Context: macos_menu_bar
+app-menu-edit = Úpravy
+# Context: macos_menu_bar
+app-menu-undo = Odvolat
+# Context: macos_menu_bar
+app-menu-redo = Zopakovat
+# Context: macos_menu_bar
+app-menu-cut = Vyjmout
+# Context: macos_menu_bar
+app-menu-copy = Kopírovat
+# Context: macos_menu_bar
+app-menu-paste = Vložit
+# Context: macos_menu_bar
+app-menu-select-all = Vybrat vše
+# Context: macos_menu_bar
+app-menu-emoji = Emoji a symboly
+# Context: macos_menu_bar
+app-menu-view = Zobrazení
+# Context: macos_menu_bar
+app-menu-actual-size = Skutečná velikost
+# Context: macos_menu_bar
+app-menu-zoom-in = Zvětšit
+# Context: macos_menu_bar
+app-menu-zoom-out = Zmenšit
+# Context: macos_menu_bar
+app-menu-full-screen = Přejít na celou obrazovku
+# Context: macos_menu_bar
+app-menu-window = Okno
+# Context: macos_menu_bar
+app-menu-minimize = Minimalizovat
+# Context: macos_menu_bar
+app-menu-zoom = Zvětšit/zmenšit
+# Context: macos_menu_bar
+app-menu-bring-all-to-front = Převést vše do popředí
+# Context: macos_menu_bar
+app-menu-help = Nápověda
+# Context: macos_menu_bar
+app-menu-github = Serein na GitHubu
+# Context: macos_menu_bar
+app-menu-report-issue = Nahlásit problém…
+
+## crates/model/src/system_messages.rs
+# Context: system_message
+system-message-a-member = člen
+# Context: system_message
+system-message-added = { $actor } přidal(a) uživatele { $target } do konverzace.
+# Context: system_message
+system-message-left = { $actor } opustil(a) konverzaci.
+# Context: system_message
+system-message-removed = { $actor } odebral(a) uživatele { $target } z konverzace.
+# Context: system_message
+system-message-call = { $actor } zahájil(a) hovor.
+# Context: system_message
+system-message-channel-name = { $actor } změnil(a) název kanálu.
+# Context: system_message
+system-message-channel-name-value = { $actor } změnil(a) název kanálu: { $value }
+# Context: system_message
+system-message-channel-icon = { $actor } změnil(a) ikonu kanálu.
+# Context: system_message
+system-message-pinned = { $actor } připnul(a) zprávu do tohoto kanálu.
+# Context: system_message
+system-message-joined = Vítejte, { $actor }! Připojil(a) se k serveru.
+# Context: system_message
+system-message-boosted = { $actor } boostnul(a) server!
+# Context: system_message
+system-message-boosted-level = { $actor } boostnul(a) server! Server dosáhl úrovně { $level }.
+# Context: system_message
+system-message-channel-follow = { $actor } přidal(a) sledování kanálu.
+# Context: system_message
+system-message-discovery-disqualified = Tento server už nesplňuje podmínky pro Objevování serverů.
+# Context: system_message
+system-message-discovery-requalified = Tento server opět splňuje podmínky pro Objevování serverů.
+# Context: system_message
+system-message-discovery-warning = Upozornění na podmínky pro Objevování serverů.
+# Context: system_message
+system-message-discovery-final-warning = Poslední upozornění na podmínky pro Objevování serverů.
+# Context: system_message
+system-message-thread = { $actor } založil(a) vlákno.
+# Context: system_message
+system-message-thread-value = { $actor } založil(a) vlákno: { $value }
+# Context: system_message
+system-message-thread-starter = Vlákno založené z dřívější zprávy.
+# Context: system_message
+system-message-invite-reminder = Připomínka pozvánky · Pozvěte lidi na tento server.
+# Context: system_message
+system-message-automod = Akce AutoModu.
+# Context: system_message
+system-message-role-subscription = { $actor } zakoupil(a) nebo obnovil(a) předplatné role.
+# Context: system_message
+system-message-premium-upsell = Nabídka prémiového předplatného.
+# Context: system_message
+system-message-stage-start = { $actor } zahájil(a) Pódium.
+# Context: system_message
+system-message-stage-end = Pódium skončilo.
+# Context: system_message
+system-message-stage-speaker = { $actor } teď mluví na Pódiu.
+# Context: system_message
+system-message-stage-raise-hand = { $actor } žádá o slovo.
+# Context: system_message
+system-message-stage-topic = { $actor } změnil(a) téma Pódia.
+# Context: system_message
+system-message-application-subscription = Prémiové předplatné aplikace serveru.
+# Context: system_message
+system-message-raid-alert-enabled = Režim výstrahy serveru je zapnutý.
+# Context: system_message
+system-message-raid-alert-disabled = Režim výstrahy serveru je vypnutý.
+# Context: system_message
+system-message-raid-report = Byl nahlášen nájezd na server.
+# Context: system_message
+system-message-false-alarm = Incident na serveru byl nahlášen jako planý poplach.
+# Context: system_message
+system-message-purchase = Oznámení o nákupu.
+# Context: system_message
+system-message-poll-closed = Anketa { $question } od uživatele { $actor } skončila.
+# Context: system_message
+system-message-poll-result = Výsledky ankety.
+# Context: system_message
+system-message-stream-hd = { $actor } přepnul(a) stream do HD.
+# Context: system_message
+system-message-report-deleted = { $actor } smazal(a) nahlášenou zprávu.
+# Context: system_message
+system-message-timed-out = { $actor } dal(a) uživateli { $target } timeout.
+# Context: system_message
+system-message-kicked = { $actor } vyhodil(a) uživatele { $target }.
+# Context: system_message
+system-message-banned = { $actor } zabanoval(a) uživatele { $target }.
+# Context: system_message
+system-message-report-resolved = { $actor } vyřešil(a) nahlášení.
+# Context: system_message
+system-message-voice-hangout = { $actor } zahájil(a) hlasové setkání.
+# Context: system_message
+system-message-friend-accepted = { $actor } přijal(a) vaši žádost o přátelství.
+
+## crates/ui/src/lib.rs composer
+# Context: composer_placeholder
+composer-placeholder = Zpráva
+# Context: composer_placeholder
+composer-placeholder-channel = Zpráva do #{ $channel }
+# Context: composer_placeholder
+composer-placeholder-direct = Zpráva pro @{ $name }

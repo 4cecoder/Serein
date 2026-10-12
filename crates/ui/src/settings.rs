@@ -219,6 +219,10 @@ impl MessagingUi {
 			self.settings.query.clear();
 		}
 	}
+	/// Opens settings on the last viewed page, as the macOS Settings menu item does.
+	pub fn open_settings(&mut self) {
+		self.settings.open = true;
+	}
 	pub fn open_update_settings(&mut self) {
 		self.settings.open = true;
 		self.settings.page = Page::Updates;

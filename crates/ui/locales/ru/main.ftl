@@ -4561,3 +4561,165 @@ profiles-activity-empty = Нет опубликованной активност
 profiles-mutuals-empty = Nothing to show here.
 
 reading-double-click-reaction = Double-click reaction
+
+## crates/platform/src/app_menu.rs
+# Context: macos_menu_bar
+app-menu-about = О программе Serein
+# Context: macos_menu_bar
+app-menu-updates = Проверить обновления…
+# Context: macos_menu_bar
+app-menu-settings = Настройки…
+# Context: macos_menu_bar
+app-menu-services = Службы
+# Context: macos_menu_bar
+app-menu-hide = Скрыть Serein
+# Context: macos_menu_bar
+app-menu-hide-others = Скрыть остальные
+# Context: macos_menu_bar
+app-menu-show-all = Показать все
+# Context: macos_menu_bar
+app-menu-quit = Завершить Serein
+# Context: macos_menu_bar
+app-menu-file = Файл
+# Context: macos_menu_bar
+app-menu-close-window = Закрыть окно
+# Context: macos_menu_bar
+app-menu-edit = Правка
+# Context: macos_menu_bar
+app-menu-undo = Отменить
+# Context: macos_menu_bar
+app-menu-redo = Повторить
+# Context: macos_menu_bar
+app-menu-cut = Вырезать
+# Context: macos_menu_bar
+app-menu-copy = Скопировать
+# Context: macos_menu_bar
+app-menu-paste = Вставить
+# Context: macos_menu_bar
+app-menu-select-all = Выбрать все
+# Context: macos_menu_bar
+app-menu-emoji = Эмодзи и символы
+# Context: macos_menu_bar
+app-menu-view = Вид
+# Context: macos_menu_bar
+app-menu-actual-size = Фактический размер
+# Context: macos_menu_bar
+app-menu-zoom-in = Увеличить
+# Context: macos_menu_bar
+app-menu-zoom-out = Уменьшить
+# Context: macos_menu_bar
+app-menu-full-screen = Перейти в полноэкранный режим
+# Context: macos_menu_bar
+app-menu-window = Окно
+# Context: macos_menu_bar
+app-menu-minimize = Свернуть
+# Context: macos_menu_bar
+app-menu-zoom = Изменить масштаб
+# Context: macos_menu_bar
+app-menu-bring-all-to-front = Все окна — на передний план
+# Context: macos_menu_bar
+app-menu-help = Справка
+# Context: macos_menu_bar
+app-menu-github = Serein на GitHub
+# Context: macos_menu_bar
+app-menu-report-issue = Сообщить о проблеме…
+
+## crates/model/src/system_messages.rs
+# Context: system_message
+system-message-a-member = участник
+# Context: system_message
+system-message-added = { $actor } добавил(а) { $target } в беседу.
+# Context: system_message
+system-message-left = { $actor } покинул(а) беседу.
+# Context: system_message
+system-message-removed = { $actor } удалил(а) { $target } из беседы.
+# Context: system_message
+system-message-call = { $actor } начал(а) звонок.
+# Context: system_message
+system-message-channel-name = { $actor } изменил(а) название канала.
+# Context: system_message
+system-message-channel-name-value = { $actor } изменил(а) название канала: { $value }
+# Context: system_message
+system-message-channel-icon = { $actor } изменил(а) значок канала.
+# Context: system_message
+system-message-pinned = { $actor } закрепил(а) сообщение в этом канале.
+# Context: system_message
+system-message-joined = Добро пожаловать, { $actor }! Теперь на сервере.
+# Context: system_message
+system-message-boosted = { $actor } забустил(а) сервер!
+# Context: system_message
+system-message-boosted-level = { $actor } забустил(а) сервер! Сервер достиг уровня { $level }.
+# Context: system_message
+system-message-channel-follow = { $actor } добавил(а) подписку на канал.
+# Context: system_message
+system-message-discovery-disqualified = Этот сервер больше не соответствует требованиям «Обзора серверов».
+# Context: system_message
+system-message-discovery-requalified = Этот сервер снова соответствует требованиям «Обзора серверов».
+# Context: system_message
+system-message-discovery-warning = Предупреждение о соответствии требованиям «Обзора серверов».
+# Context: system_message
+system-message-discovery-final-warning = Последнее предупреждение о соответствии требованиям «Обзора серверов».
+# Context: system_message
+system-message-thread = { $actor } создал(а) ветку.
+# Context: system_message
+system-message-thread-value = { $actor } создал(а) ветку: { $value }
+# Context: system_message
+system-message-thread-starter = Ветка создана из более раннего сообщения.
+# Context: system_message
+system-message-invite-reminder = Напоминание о приглашении · Пригласите людей на этот сервер.
+# Context: system_message
+system-message-automod = Действие AutoMod.
+# Context: system_message
+system-message-role-subscription = { $actor } купил(а) или продлил(а) подписку на роль.
+# Context: system_message
+system-message-premium-upsell = Предложение премиум-подписки.
+# Context: system_message
+system-message-stage-start = { $actor } начал(а) трибуну.
+# Context: system_message
+system-message-stage-end = Трибуна завершена.
+# Context: system_message
+system-message-stage-speaker = { $actor } теперь выступает на трибуне.
+# Context: system_message
+system-message-stage-raise-hand = { $actor } просит слова.
+# Context: system_message
+system-message-stage-topic = { $actor } изменил(а) тему трибуны.
+# Context: system_message
+system-message-application-subscription = Премиум-подписка на приложение сервера.
+# Context: system_message
+system-message-raid-alert-enabled = Режим тревоги сервера включён.
+# Context: system_message
+system-message-raid-alert-disabled = Режим тревоги сервера отключён.
+# Context: system_message
+system-message-raid-report = Поступила жалоба на рейд на сервер.
+# Context: system_message
+system-message-false-alarm = Инцидент на сервере отмечен как ложная тревога.
+# Context: system_message
+system-message-purchase = Уведомление о покупке.
+# Context: system_message
+system-message-poll-closed = Опрос { $question } от { $actor } завершён.
+# Context: system_message
+system-message-poll-result = Результаты опроса.
+# Context: system_message
+system-message-stream-hd = { $actor } повысил(а) качество трансляции до HD.
+# Context: system_message
+system-message-report-deleted = { $actor } удалил(а) сообщение, на которое пожаловались.
+# Context: system_message
+system-message-timed-out = { $actor } отправил(а) { $target } в тайм-аут.
+# Context: system_message
+system-message-kicked = { $actor } выгнал(а) { $target }.
+# Context: system_message
+system-message-banned = { $actor } забанил(а) { $target }.
+# Context: system_message
+system-message-report-resolved = { $actor } рассмотрел(а) жалобу.
+# Context: system_message
+system-message-voice-hangout = { $actor } начал(а) голосовую тусовку.
+# Context: system_message
+system-message-friend-accepted = { $actor } принял(а) ваш запрос дружбы.
+
+## crates/ui/src/lib.rs composer
+# Context: composer_placeholder
+composer-placeholder = Сообщение
+# Context: composer_placeholder
+composer-placeholder-channel = Написать в #{ $channel }
+# Context: composer_placeholder
+composer-placeholder-direct = Написать @{ $name }
