@@ -3763,7 +3763,17 @@ fn paint_collectibles(
 	if let Some(effect) = data.effect.as_deref().filter(|_| avatars.cosmetics.effects) {
 		let ready = avatars.effect_ready(ui, effect, demo);
 		let elapsed = effect_clock(ui.ctx(), data.user.id, effect.sku, full, ready);
-		avatars.paint_effect(ui, effect, card, elapsed, demo);
+		// The effect steps back while the pointer is over the card, so its text stays readable.
+		let hovered = ui
+			.ctx()
+			.pointer_hover_pos()
+			.is_some_and(|pointer| card.contains(pointer) && ui.clip_rect().contains(pointer));
+		let fade = ui.ctx().animate_bool_with_time(
+			egui::Id::unique(("profile-effect-hover", full)),
+			hovered,
+			0.2,
+		);
+		avatars.paint_effect(ui, effect, card, elapsed, 1.0 - 0.75 * fade, demo);
 	}
 	let Some(frame) = data.frame.as_deref().filter(|_| avatars.cosmetics.frames) else {
 		return;

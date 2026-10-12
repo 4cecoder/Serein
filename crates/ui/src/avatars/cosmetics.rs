@@ -245,16 +245,20 @@ impl Avatars {
 		ready
 	}
 
-	/// Effect layers over a card. `elapsed` counts from when the layers were ready; `None`, a
-	/// disabled animation setting or an unfocused window shows the still artwork instead.
+	/// Effect layers over a card. `elapsed` counts from when the layers were ready; nothing shows
+	/// before then, so the still (the effect's end state) never flashes ahead of the animation.
+	/// Only disabled motion or a layerless effect shows the still. One-shot files hold their
+	/// last frame; `opacity` fades the effect while the card is hovered.
 	pub(crate) fn paint_effect(
 		&mut self,
 		ui: &egui::Ui,
 		effect: &ProfileEffect,
 		card: Rect,
 		elapsed: Option<Duration>,
+		opacity: f32,
 		demo: bool,
 	) {
+		let tint = Color32::WHITE.gamma_multiply(opacity);
 		if !ui.is_rect_visible(card) || card.width() <= 0.0 {
 			return;
 		}
@@ -267,18 +271,17 @@ impl Avatars {
 				vec2(f32::from(size[0]), f32::from(size[1])) * scale,
 			)
 		};
-		let playing = self.animate_gifs && ui.input(|input| input.focused);
-		let Some(elapsed) = elapsed.filter(|_| playing && !effect.layers.is_empty()) else {
+		if !self.animate_gifs || effect.layers.is_empty() {
 			if let Some(still) = &effect.still
 				&& let Some(texture) = self.cosmetic(ui.ctx(), &still.still_key(), demo)
-				&& let Some(shape) = clipped(
-					&texture,
-					place([0, 0], model::EFFECT_CANVAS),
-					clip,
-					Color32::WHITE,
-				) {
+				&& let Some(shape) =
+					clipped(&texture, place([0, 0], model::EFFECT_CANVAS), clip, tint)
+			{
 				painter.add(shape);
 			}
+			return;
+		}
+		let Some(elapsed) = elapsed.filter(|_| ui.input(|input| input.focused)) else {
 			return;
 		};
 		let intro = Duration::from_millis(model::EFFECT_INTRO_MS);
@@ -303,7 +306,11 @@ impl Avatars {
 			let texture = match self.animations.get_mut(&key) {
 				Some(animation) if !animation.total.is_zero() => {
 					let total = animation.total.as_millis().max(1) as u64;
-					let local = if layer.looping {
+					let local = if layer.looping && layer.loop_delay_ms == 0 {
+						// A continuous loop follows the file itself: endless files repeat and
+						// one-shot files (held last frame) stay stopped, never restarting.
+						(timeline - u64::from(layer.start_ms)) % total
+					} else if layer.looping {
 						local % total
 					} else {
 						local.min(total - 1)
@@ -319,12 +326,7 @@ impl Avatars {
 				}
 			}
 			.unwrap_or(still);
-			if let Some(shape) = clipped(
-				&texture,
-				place(layer.position, layer.size),
-				clip,
-				Color32::WHITE,
-			) {
+			if let Some(shape) = clipped(&texture, place(layer.position, layer.size), clip, tint) {
 				painter.add(shape);
 			}
 		}

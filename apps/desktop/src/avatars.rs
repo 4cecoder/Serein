@@ -1294,7 +1294,8 @@ async fn run(
 				if *cancelled.borrow() { break; }
 				if Rendition::parse(&key).is_some_and(|rendition| rendition.lane == Lane::Viewer) {
 					viewer.push_back(key);
-				} else if partition(&key) == model::CachePartition::Artwork {
+				} else if partition(&key) == model::CachePartition::Artwork && !is_animated_key(&key) {
+					// Animated decorations decode every frame; they must not delay server icons.
 					artwork.push_back(key);
 				} else {
 					inline.push_back(key);
@@ -1563,7 +1564,15 @@ async fn decode_blocking(
 				});
 			}
 		};
-		let frames = decode_animation(&bytes, &frame_budget, post).unwrap_or_default();
+		let mut frames = decode_animation(&bytes, &frame_budget, post).unwrap_or_default();
+		// A profile effect layer that plays its file once keeps the last frame for the rest of
+		// its duration, as browsers do, instead of jumping back to the first frame.
+		if Cosmetic::parse(&key) == Some(Cosmetic::Effect)
+			&& apng_plays(&bytes).is_some_and(|plays| plays > 0)
+			&& let Some((delay, _)) = frames.last_mut()
+		{
+			*delay = Duration::from_secs(60 * 60);
+		}
 		let image = frames
 			.first()
 			.map(|(_, image)| image.as_ref().clone())
@@ -1732,7 +1741,12 @@ fn resize_to(image: image::RgbaImage, fit: u32) -> image::RgbaImage {
 	} else {
 		image::imageops::FilterType::Lanczos3
 	};
-	image::imageops::resize(&image, width, height, filter)
+	// The generic `imageops::resize` would be instantiated in this unoptimized dev crate, about
+	// 30 times slower per animation frame; the `DynamicImage` method runs the same filter
+	// compiled in the optimized `image` crate.
+	image::DynamicImage::ImageRgba8(image)
+		.resize_exact(width, height, filter)
+		.into_rgba8()
 }
 
 fn decode_motion_video(
@@ -1923,6 +1937,23 @@ fn decode_animation(
 		}
 		return Some(frames);
 	}
+}
+
+/// The APNG play count from `acTL`, where 0 means forever; `None` for other images.
+fn apng_plays(bytes: &[u8]) -> Option<u32> {
+	let mut chunks = bytes.strip_prefix(b"\x89PNG\r\n\x1a\n")?;
+	while let [a, b, c, d, kind @ ..] = chunks
+		&& kind.len() >= 8
+	{
+		let length = u32::from_be_bytes([*a, *b, *c, *d]) as usize;
+		let (name, data) = kind.split_at(4);
+		match name {
+			b"acTL" => return Some(u32::from_be_bytes(data.get(4..8)?.try_into().ok()?)),
+			b"IDAT" => return None,
+			_ => chunks = data.get(length.checked_add(4)?..)?,
+		}
+	}
+	None
 }
 
 fn animation_frames(bytes: &[u8]) -> Option<image::Frames<'_>> {
