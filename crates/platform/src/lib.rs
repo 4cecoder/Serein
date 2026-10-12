@@ -5,6 +5,7 @@ pub mod compositor;
 pub mod game_activity;
 pub mod heic;
 pub mod hotkeys;
+pub mod memory;
 pub mod notifications;
 pub mod pointer;
 pub mod processes;

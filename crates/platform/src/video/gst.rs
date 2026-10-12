@@ -3,8 +3,8 @@
 //! unsynchronised `appsink`s hand back NV12/I420 pictures and 48 kHz stereo float PCM on demand.
 //! The same distributions that ship WebKitGTK for the login page also ship these plugins.
 use super::{
-	Color, INVALID, Info, Layout, MAX_BYTES, MAX_SECONDS, Matrix, Picture, ReadSeek, Sample,
-	TOO_LONG, UNSUPPORTED, picture::pack_plane,
+	Color, INVALID, Info, Layout, MAX_BYTES, MAX_SECONDS, MISSING_DECODER, MISSING_HEVC, Matrix,
+	Picture, ReadSeek, Sample, TOO_LONG, UNSUPPORTED, picture::pack_plane,
 };
 use gstreamer as gst;
 use gstreamer::prelude::*;
@@ -52,6 +52,17 @@ impl Drop for Decoder {
 	}
 }
 
+/// Stops a pipeline that `open` started but could not hand to a [`Decoder`]. Its streaming
+/// threads would otherwise block on full queues forever, holding every buffered frame.
+struct StopOnError(Option<gst::Pipeline>);
+impl Drop for StopOnError {
+	fn drop(&mut self) {
+		if let Some(pipeline) = self.0.take() {
+			let _ = pipeline.set_state(gst::State::Null);
+		}
+	}
+}
+
 impl Decoder {
 	pub fn open(mut source: Box<dyn ReadSeek>) -> Result<Self, &'static str> {
 		let length = source.seek(SeekFrom::End(0)).map_err(|_| INVALID)?;
@@ -74,6 +85,7 @@ impl Decoder {
 			failed: AtomicBool::new(false),
 		});
 		let pipeline = gst::Pipeline::new();
+		let mut started = StopOnError(Some(pipeline.clone()));
 		let appsrc = gst_app::AppSrc::builder().build();
 		appsrc.set_stream_type(gst_app::AppStreamType::RandomAccess);
 		appsrc.set_format(gst::Format::Bytes);
@@ -124,10 +136,15 @@ impl Decoder {
 		let has_video = Arc::new(AtomicBool::new(false));
 		let has_audio = Arc::new(AtomicBool::new(false));
 		decodebin.connect_pad_added({
-			let pipeline = pipeline.clone();
+			// Weak: the pipeline owns decodebin and this handler, so a strong clone would
+			// keep every element alive after the decoder is dropped.
+			let pipeline = pipeline.downgrade();
 			let (video, audio) = (video.clone(), audio.clone());
 			let (has_video, has_audio) = (has_video.clone(), has_audio.clone());
 			move |_, pad| {
+				let Some(pipeline) = pipeline.upgrade() else {
+					return;
+				};
 				let Some(caps) = pad.current_caps() else {
 					return;
 				};
@@ -190,6 +207,8 @@ impl Decoder {
 		pipeline
 			.set_state(gst::State::Playing)
 			.map_err(|_| UNSUPPORTED)?;
+		// From here the decoder's own `Drop` stops the pipeline.
+		started.0 = None;
 		Ok(Self {
 			pipeline,
 			video,
@@ -406,6 +425,7 @@ fn wait_ready(pipeline: &gst::Pipeline, shared: &Shared) -> Result<(), &'static 
 				gst::MessageType::AsyncDone,
 				gst::MessageType::Error,
 				gst::MessageType::Eos,
+				gst::MessageType::Element,
 			],
 		) else {
 			if started.elapsed().as_secs() > WAIT.seconds() {
@@ -417,9 +437,34 @@ fn wait_ready(pipeline: &gst::Pipeline, shared: &Shared) -> Result<(), &'static 
 			gst::MessageView::AsyncDone(_) => return Ok(()),
 			gst::MessageView::Error(_) => return Err(UNSUPPORTED),
 			gst::MessageView::Eos(_) => return Err(INVALID),
+			gst::MessageView::Element(element) => {
+				if let Some(missing) = missing_video_decoder(element.structure()) {
+					return Err(missing);
+				}
+			}
 			_ => {}
 		}
 	}
+}
+
+/// decodebin reports a codec it cannot decode with a `missing-plugin` message, then waits
+/// for that stream indefinitely. Without a video decoder the picture can never preroll, so
+/// fail at once and name the codec. A missing audio decoder still plays without sound.
+fn missing_video_decoder(structure: Option<&gst::StructureRef>) -> Option<&'static str> {
+	let structure = structure.filter(|structure| structure.name() == "missing-plugin")?;
+	if structure.get::<String>("type").ok()? != "decoder" {
+		return None;
+	}
+	let caps = structure.get::<gst::Caps>("detail").ok()?;
+	let codec = caps.structure(0)?.name();
+	if !codec.starts_with("video/") {
+		return None;
+	}
+	Some(if codec == "video/x-h265" {
+		MISSING_HEVC
+	} else {
+		MISSING_DECODER
+	})
 }
 
 fn check_bus(pipeline: &gst::Pipeline) -> Result<(), &'static str> {
@@ -530,6 +575,7 @@ fn stream_time(sample: &gst::Sample) -> Result<f64, &'static str> {
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use std::io::{Read, Seek};
 	const FIXTURE: &[u8] = include_bytes!("../../../../apps/desktop/tests/fixtures/video.mov");
 
 	fn wait_for_sample(
@@ -544,6 +590,87 @@ mod tests {
 			assert!(started.elapsed().as_secs() < 20, "sample timed out");
 			std::thread::sleep(std::time::Duration::from_millis(1));
 		}
+	}
+
+	/// Reads the fixture, optionally failing after `limit` bytes, and records its release.
+	struct Tracked {
+		inner: std::io::Cursor<&'static [u8]>,
+		limit: Option<u64>,
+		dropped: Arc<AtomicBool>,
+	}
+	impl Read for Tracked {
+		fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+			if self
+				.limit
+				.is_some_and(|limit| self.inner.position() >= limit)
+			{
+				return Err(std::io::ErrorKind::BrokenPipe.into());
+			}
+			self.inner.read(buf)
+		}
+	}
+	impl Seek for Tracked {
+		fn seek(&mut self, position: SeekFrom) -> std::io::Result<u64> {
+			self.inner.seek(position)
+		}
+	}
+	impl Drop for Tracked {
+		fn drop(&mut self) {
+			self.dropped.store(true, Ordering::Release);
+		}
+	}
+	fn tracked(limit: Option<u64>) -> (Box<dyn ReadSeek>, Arc<AtomicBool>) {
+		let dropped = Arc::new(AtomicBool::new(false));
+		let source = Tracked {
+			inner: std::io::Cursor::new(FIXTURE),
+			limit,
+			dropped: dropped.clone(),
+		};
+		(Box::new(source), dropped)
+	}
+
+	#[test]
+	fn missing_video_decoders_are_named_and_audio_ones_ignored() {
+		gst::init().unwrap();
+		let missing = |kind: &str, caps: &str| {
+			gst::Structure::builder("missing-plugin")
+				.field("type", kind)
+				.field("detail", gst::Caps::builder(caps).build())
+				.build()
+		};
+		let hevc = missing("decoder", "video/x-h265");
+		assert_eq!(missing_video_decoder(Some(&hevc)), Some(MISSING_HEVC));
+		let vp9 = missing("decoder", "video/x-vp9");
+		assert_eq!(missing_video_decoder(Some(&vp9)), Some(MISSING_DECODER));
+		for ignored in [
+			missing("decoder", "audio/x-opus"),
+			missing("encoder", "video/x-h265"),
+		] {
+			assert_eq!(missing_video_decoder(Some(&ignored)), None);
+		}
+		let other = gst::Structure::builder("progress").build();
+		assert_eq!(missing_video_decoder(Some(&other)), None);
+		assert_eq!(missing_video_decoder(None), None);
+	}
+
+	#[test]
+	fn failed_and_finished_pipelines_release_their_source() {
+		// The source is owned by appsrc callbacks, so it is freed only once the pipeline
+		// has stopped and nothing keeps its elements alive.
+		let (source, dropped) = tracked(Some(FIXTURE.len() as u64 / 3));
+		assert!(Decoder::open(source).is_err());
+		assert!(
+			dropped.load(Ordering::Acquire),
+			"failed open leaked its pipeline"
+		);
+		let (source, dropped) = tracked(None);
+		let mut decoder = Decoder::open(source).unwrap();
+		assert!(wait_for_sample(&mut decoder, Decoder::poll_video).is_some());
+		drop(decoder);
+		assert!(
+			dropped.load(Ordering::Acquire),
+			"dropped decoder leaked its pipeline"
+		);
 	}
 
 	#[test]

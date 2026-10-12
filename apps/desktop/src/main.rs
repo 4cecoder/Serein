@@ -78,6 +78,7 @@ const SIGN_IN_HEADER_HEIGHT: f32 = if cfg!(target_os = "windows") {
 
 /// Run explicit offline checks before native startup, or launch the configured desktop client.
 fn main() -> eframe::Result {
+	platform::memory::tune_allocator();
 	#[cfg(all(debug_assertions, feature = "demo"))]
 	if std::env::args().any(|arg| arg == "--demo")
 		&& std::env::args().any(|arg| arg == "--demo-check-pr565")

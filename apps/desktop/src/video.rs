@@ -196,7 +196,9 @@ impl Video {
 						let Some(request) = receiver.borrow_and_update().clone() else {
 							continue;
 						};
-						if let Err(error) = play(&request, &runtime, &ctx)
+						let result = play(&request, &runtime, &ctx);
+						platform::memory::release_freed_memory();
+						if let Err(error) = result
 							&& !request.session.cancelled.load(Ordering::Acquire)
 						{
 							if let Ok(mut update) = request.session.update.lock() {
@@ -280,7 +282,11 @@ impl Video {
 					let mut stack = Vec::new();
 					loop {
 						if stack.is_empty() {
-							let Ok(job) = receiver.recv() else {
+							let Ok(job) = receiver.try_recv().or_else(|_| {
+								// The batch is done: return its decoders' memory once.
+								platform::memory::release_freed_memory();
+								receiver.recv()
+							}) else {
 								break;
 							};
 							stack.push(job);
