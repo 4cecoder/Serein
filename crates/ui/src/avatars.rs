@@ -1,4 +1,5 @@
 //! Visible-avatar requests and a small texture working set. Disk/network work lives outside egui.
+mod cosmetics;
 pub(crate) mod media;
 
 use egui::{ColorImage, TextureHandle};
@@ -38,6 +39,8 @@ const TEXTURE_BYTES: usize = 64 * 1024 * 1024;
 const IDLE_TEXTURES: Duration = Duration::from_secs(60);
 /// Longest edge for string-keyed artwork: stickers, picker previews, banners and activity art.
 pub const EMBED_EDGE: u32 = 512;
+/// Longest edge for profile frame layers, which span a whole card.
+pub const FRAME_EDGE: u32 = 1024;
 const REQUESTS: usize = 128;
 const RETRY: Duration = Duration::from_secs(5);
 
@@ -52,6 +55,8 @@ struct AvatarKey {
 #[derive(Default)]
 pub(crate) struct Avatars {
 	pub animate_gifs: bool,
+	/// Hidden cosmetics are neither painted nor requested.
+	pub cosmetics: model::CosmeticPreferences,
 	avatar_animation: bool,
 	animations: HashMap<String, Animation>,
 	no_animations: HashSet<String>,
@@ -59,6 +64,12 @@ pub(crate) struct Avatars {
 	released: HashSet<String>,
 	/// Hover-only artwork that wanted to play while its frames were missing.
 	wanted: HashSet<String>,
+	/// Profile effect layers with a decode in flight, so readiness neither repeats the request
+	/// nor waits on frames that were discarded without one.
+	effect_decoding: HashSet<String>,
+	/// Effect layers already decoded again once; losing their frames again (an effect larger
+	/// than the animation pool) shows them as stills instead of decoding in a loop.
+	effect_reloaded: HashSet<String>,
 	textures: HashMap<String, (Instant, TextureHandle)>,
 	emoji_textures: HashMap<String, (Instant, TextureHandle)>,
 	emoji_bytes: usize,
@@ -77,11 +88,14 @@ impl Animation {
 		if total_nanos == 0 {
 			return None;
 		}
+		let elapsed_nanos = (self.started.elapsed().as_nanos() % total_nanos) as u64;
+		self.seek(ctx, Duration::from_nanos(elapsed_nanos))
+	}
+	/// Shows the frame at `elapsed` into the clip, which must be shorter than `total`.
+	fn seek(&mut self, ctx: &egui::Context, mut elapsed: Duration) -> Option<TextureHandle> {
 		let now = Instant::now();
 		self.played = now;
-		let elapsed_nanos = (self.started.elapsed().as_nanos() % total_nanos) as u64;
-		let mut elapsed = Duration::from_nanos(elapsed_nanos);
-		let mut target_index = 0;
+		let mut target_index = self.frames.len().saturating_sub(1);
 		let mut frame_remaining = Duration::ZERO;
 		for (index, (delay, _)) in self.frames.iter().enumerate() {
 			if elapsed < *delay {
@@ -148,6 +162,13 @@ fn paint_texture(
 }
 
 fn is_animated_profile_or_avatar_key(key: &str) -> bool {
+	// Decorations and nameplates animate while hovered, like the avatar beside them.
+	if let Some(asset) = key.strip_prefix("decoration-") {
+		return asset.starts_with("a_");
+	}
+	if key.starts_with("nameplate-anim-") {
+		return true;
+	}
 	if let Some(value) = key.strip_prefix("banner-") {
 		return value
 			.split_once('-')
@@ -197,6 +218,8 @@ impl Avatars {
 		self.no_animations.clear();
 		self.released.clear();
 		self.wanted.clear();
+		self.effect_decoding.clear();
+		self.effect_reloaded.clear();
 		self.media.set_animation(enabled);
 		if !enabled {
 			self.animations.clear();
@@ -213,6 +236,7 @@ impl Avatars {
 		}
 	}
 	pub fn accept_animation(&mut self, key: String, frames: GifFrames) {
+		self.effect_decoding.remove(&key);
 		if key.starts_with("media:") {
 			if self.animate_gifs
 				&& let Some(rendition) = media::Rendition::parse(&key)
@@ -372,7 +396,13 @@ impl Avatars {
 		if !self.attempts.contains_key(&key) {
 			return;
 		}
-		let limit = if key.starts_with("anim:")
+		let limit = if key.starts_with("frame-") {
+			FRAME_EDGE as usize
+		} else if key.starts_with("decoration-") {
+			256
+		} else if key.starts_with("anim:")
+			|| key.starts_with("nameplate-")
+			|| key.starts_with("effect-")
 			|| key.starts_with("embed:")
 			|| key.starts_with("gif:")
 			|| key.starts_with("spotify-")
@@ -392,6 +422,8 @@ impl Avatars {
 				&& image.size[1] <= limit
 				&& image.pixels.len() == image.size[0] * image.size[1]
 		}) else {
+			// A failed or rejected load ends any decode an effect layer was waiting for.
+			self.effect_decoding.remove(&key);
 			if let Some(attempt) = self.attempts.get_mut(&key) {
 				*attempt = (Instant::now(), true);
 			}
@@ -918,18 +950,16 @@ impl Avatars {
 				self.attempts.insert(key.clone(), (Instant::now(), false));
 				self.accept(ui.ctx(), key.clone(), Some(image));
 			}
-			if !self.paint(
-				ui,
-				&key,
-				ui.layout()
-					.align_size_within_rect(egui::Vec2::splat(size), response.rect),
-				(size * 0.5) as u8,
-			) {
+			let rect = ui
+				.layout()
+				.align_size_within_rect(egui::Vec2::splat(size), response.rect);
+			if !self.paint(ui, &key, rect, (size * 0.5) as u8) {
 				crate::design::paint_avatar(ui, &profile.user.name, size, response.rect);
 				if !demo {
 					self.request(key);
 				}
 			}
+			self.paint_decoration(ui, &profile.user, size, rect, demo);
 		}
 		response.widget_info(|| {
 			egui::WidgetInfo::labeled(
@@ -1422,6 +1452,7 @@ impl Avatars {
 					self.request(key.to_string());
 				}
 			}
+			self.paint_decoration(ui, user, size, rect, demo);
 		}
 	}
 	pub fn show(

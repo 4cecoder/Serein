@@ -4,6 +4,33 @@ Recent synthetic/offline measurements are workload-specific. They do not establi
 performance, universal device results or application-wide memory bounds. The raw PR screenshot,
 log and per-run evidence archive has been removed; the summaries below retain the useful results.
 
+## Profile cosmetics — October 11, 2026
+
+Release builds of baseline `178bde35` and the cosmetics branch on Linux 7.2.9 (CachyOS),
+AMD Ryzen 7 7800X3D, 30 GiB RAM, under headless gamescope at 1440 x 900 and scale 1.0.
+Default features were used for the package; `--features demo` for the processes. Each run
+had a 5 s warmup followed by 20 s sampled from `/proc/<pid>/status` at 1 s intervals; the
+table shows the median of three runs. Both binaries were freshly copied first, so their
+pages were equally cached. An earlier run against the just-linked branch binary showed
+18 MiB more resident file pages from page-cache warmth. Heap and anonymous mappings were
+identical in that run, so it is a measurement artifact.
+
+| Metric | Baseline | Cosmetics | Delta |
+| --- | ---: | ---: | ---: |
+| Package executable | 87,314,600 B | 87,555,752 B | +241,152 B (+0.28%) |
+| Installed tree (`xtask package --format dir`) | 91,848,634 B | 92,089,786 B | +241,152 B (+0.26%) |
+| Installed tree, `tar` + `zstd -19` | 46,156,864 B | 46,280,238 B | +123,374 B (+0.27%) |
+| `serein --demo` settled / peak RSS | 134 / 149 MiB | 134 / 149 MiB | 0 |
+| `serein --demo` idle CPU (one core) | 0.25% | 0.25% | noise |
+| `profile_preview --page=collectibles` settled / peak RSS | 94 / 110 MiB | 95 / 111 MiB | about +1 MiB |
+| `profile_preview --page=collectibles` CPU | 0.25% | 0.25% | noise |
+
+CPU did not change on the fixture page, which suggests the headless window was not playing
+the effect (playback pauses while unfocused). Playback CPU was therefore not measured. Decoding two real Discord effect layers (450 x 880
+APNG) through the worker's effect budget took 96–138 ms and produced 25–31 frames at
+261 x 512. That is 13–16 MiB of frames per layer, against a 24 MiB layer budget and the
+existing 128 MiB animation pool.
+
 ## GPU colour conversion for decoded video — October 11, 2026
 
 Decoders now hand over native 4:2:0 planes (VideoToolbox NV12, GStreamer NV12/I420,

@@ -3502,6 +3502,56 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein не собирает телеметрию и не загружает диагностические данные. Discord сохраняет данные на стороне сервиса в соответствии со своей собственной политикой.
 # Context: storage_page
 settings-storage-page-your-privacy = Ваша конфиденциальность
+# Context: cosmetic_settings
+settings-cosmetics = Оформление профиля
+# Context: cosmetic_settings
+settings-cosmetics-decorations = Украшения аватаров
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = Изображения вокруг аватаров.
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = Таблички с именем
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = Изображения за именами в списках участников и личных сообщений.
+# Context: cosmetic_settings
+settings-cosmetics-effects = Эффекты профиля
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = Анимации поверх карточек профиля.
+# Context: cosmetic_settings
+settings-cosmetics-frames = Рамки профиля
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = Изображения вокруг карточек профиля.
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = Скрытое оформление не загружается. Меняется только отображение на этом устройстве.
+# Context: image_cache_settings
+settings-image-cache = Кэш изображений
+# Context: image_cache_settings
+settings-image-cache-media = Кэш медиафайлов
+# Context: image_cache_settings
+settings-image-cache-media-description = Аватары, баннеры, превью и стикеры.
+# Context: image_cache_settings
+settings-image-cache-artwork = Кэш общих изображений
+# Context: image_cache_settings
+settings-image-cache-artwork-description = Эмодзи, значки, теги серверов, значки ролей, украшения аватаров и таблички с именем хранятся отдельно, чтобы крупные медиафайлы никогда их не вытесняли.
+# Context: image_cache_settings
+settings-image-cache-usage = Занято { $used } из { $limit }.
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = Объём появится после загрузки изображений.
+# Context: image_cache_settings
+settings-image-cache-clear = Очистить
+# Context: image_cache_settings
+settings-image-cache-clear-description = Сразу удаляет эти загруженные изображения. Сообщения, черновики и вход сохраняются.
+# Context: image_cache_settings
+settings-image-cache-retention = Удалять неиспользуемые изображения через
+# Context: image_cache_settings
+settings-image-cache-retention-description = Изображения в кэше, которые не показывались столько времени, удаляются с диска.
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count ->
+        [one] { $count } день
+        [few] { $count } дня
+        [many] { $count } дней
+       *[other] { $count } дня
+    }
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument

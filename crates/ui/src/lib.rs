@@ -18,7 +18,7 @@ mod avatars;
 #[cfg(feature = "demo")]
 pub use avatars::media::debug_heic_layout_check;
 pub use avatars::media::{Lane, MAX_FRAMES, Motion, Rendition, Size, fit_edge, is_motion_video};
-pub use avatars::{EMBED_EDGE, GifFrames};
+pub use avatars::{EMBED_EDGE, FRAME_EDGE, GifFrames};
 mod categories;
 #[cfg(feature = "demo")]
 pub use categories::debug_thread_navigation_check;
@@ -296,6 +296,14 @@ pub struct MessagingUi {
 	message_requests_collapsed: bool,
 	/// Custom emoji that need Nitro stay out of `:` suggestions and are locked in pickers.
 	pub hide_nitro_emojis: bool,
+	/// Profile cosmetics shown on this device; hidden ones are not downloaded.
+	pub cosmetics: model::CosmeticPreferences,
+	/// Disk budgets and retention for downloaded images.
+	pub image_cache: model::CachePreferences,
+	/// Latest disk use of the media and shared-artwork caches, once measured.
+	pub image_cache_usage: Option<[model::CacheUsage; 2]>,
+	/// An image cache partition the owner asked to empty; the desktop consumes it.
+	pub clear_image_cache: Option<model::CachePartition>,
 	pub hide_title_bar: bool,
 	pub hide_window_decorations: bool,
 	pub custom_font: fonts::Settings,
@@ -740,6 +748,11 @@ impl MessagingUi {
 	#[cfg(any(test, feature = "demo"))]
 	pub fn preview_profile(&mut self, user: model::User) {
 		self.members_narrow_open = true;
+		self.profile.command_open(user);
+	}
+	/// Fixture-only entry point: the profile popout alone, beside a docked member list.
+	#[cfg(any(test, feature = "demo"))]
+	pub fn preview_profile_popout(&mut self, user: model::User) {
 		self.profile.command_open(user);
 	}
 	#[cfg(any(test, feature = "demo"))]
@@ -1538,13 +1551,23 @@ impl MessagingUi {
 								)
 							});
 							let row = rect.shrink2(egui::vec2(0.0, 1.0));
-							if response.hovered() || response.has_focus() {
+							let focused = response.hovered() || response.has_focus();
+							if focused {
 								ui.painter().rect_filled(
 									row,
 									6,
 									design::row_highlight(ui, colors.hover, 1.0),
 								);
 							}
+							self.avatars.paint_nameplate(
+								ui,
+								&member.user,
+								row,
+								6,
+								focused,
+								!online,
+								state.demo,
+							);
 							let mut inner = ui.new_child(
 								egui::UiBuilder::new()
 									.max_rect(row.shrink2(egui::vec2(8.0, 4.0)))
@@ -3923,6 +3946,8 @@ impl MessagingUi {
 	}
 
 	pub fn show(&mut self, ui: &mut egui::Ui, state: &mut State) -> Vec<Command> {
+		self.avatars.cosmetics = self.cosmetics;
+		let cosmetics_refresh = state.set_profile_cosmetics(self.cosmetics);
 		self.timeline.download.gif_favorites = state
 			.gifs
 			.favorites
@@ -4006,6 +4031,7 @@ impl MessagingUi {
 		self.timeline.video.seen = false;
 		let side = self.drain_side_press();
 		let mut commands = Vec::new();
+		commands.extend(cosmetics_refresh);
 		// A server joined from an invite opens as soon as the Gateway delivers it.
 		commands.extend(state.navigate_after_join());
 		if let Some(action) = self.poll_creator.show(ui.ctx(), state, &mut self.avatars)
@@ -5741,6 +5767,7 @@ mod composer_tests {
 			kind: Default::default(),
 			discriminator: 0,
 			primary_guild: None,
+			cosmetics: None,
 		};
 		let mut state = State {
 			selected: Some(Id(10)),
@@ -7766,6 +7793,7 @@ mod composer_tests {
 								kind: Default::default(),
 								discriminator: 0,
 								primary_guild: None,
+								cosmetics: None,
 							},
 							nick: None,
 							roles: vec![],
@@ -8521,6 +8549,7 @@ mod composer_tests {
 				kind: Default::default(),
 				discriminator: 0,
 				primary_guild: None,
+				cosmetics: None,
 			};
 			let mut state = State {
 				demo: true,

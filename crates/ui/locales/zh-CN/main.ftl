@@ -3535,6 +3535,51 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein 不收集遥测数据，也不上传诊断信息。Discord 的服务端数据按其自身政策保留。
 # Context: storage_page
 settings-storage-page-your-privacy = 你的隐私
+# Context: cosmetic_settings
+settings-cosmetics = 个人资料装饰
+# Context: cosmetic_settings
+settings-cosmetics-decorations = 头像装饰
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = 显示在头像周围的图案。
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = 名牌
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = 成员列表和私信列表中名字后方的图案。
+# Context: cosmetic_settings
+settings-cosmetics-effects = 个人资料特效
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = 在个人资料卡上播放的动画。
+# Context: cosmetic_settings
+settings-cosmetics-frames = 个人资料边框
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = 显示在个人资料卡周围的图案。
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = 隐藏的装饰不会被下载。这只会改变此设备上的显示。
+# Context: image_cache_settings
+settings-image-cache = 图片缓存
+# Context: image_cache_settings
+settings-image-cache-media = 媒体缓存
+# Context: image_cache_settings
+settings-image-cache-media-description = 头像、横幅、预览和贴纸。
+# Context: image_cache_settings
+settings-image-cache-artwork = 共享图案缓存
+# Context: image_cache_settings
+settings-image-cache-artwork-description = 表情、徽章、服务器标签、身份组图标、头像装饰和名牌单独保存，大型媒体不会把它们挤出缓存。
+# Context: image_cache_settings
+settings-image-cache-usage = 已使用 { $used }，共 { $limit }。
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = 图片加载后会显示用量。
+# Context: image_cache_settings
+settings-image-cache-clear = 清除
+# Context: image_cache_settings
+settings-image-cache-clear-description = 立即删除这些已下载的图片。消息、草稿和登录状态会保留。
+# Context: image_cache_settings
+settings-image-cache-retention = 未使用的图片保留时长
+# Context: image_cache_settings
+settings-image-cache-retention-description = 在此期间未再显示的缓存图片将从磁盘删除。
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count } 天
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument

@@ -985,6 +985,7 @@ mod invite_tests {
 			gateway_connected: true,
 			user: Some(model::User {
 				primary_guild: None,
+				cosmetics: None,
 				id: Id(1),
 				name: "Synthetic".into(),
 				avatar: None,
@@ -1138,6 +1139,7 @@ mod sticker_tests {
 	fn user(id: u64, name: &str) -> model::User {
 		model::User {
 			primary_guild: None,
+			cosmetics: None,
 			id: Id(id),
 			name: name.into(),
 			avatar: None,

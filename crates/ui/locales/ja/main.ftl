@@ -3502,6 +3502,51 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein はテレメトリを収集したり、診断をアップロードしたりしません。 Discord は、独自のポリシーに従ってサービス側のデータを保持します。
 # Context: storage_page
 settings-storage-page-your-privacy = あなたのプライバシー
+# Context: cosmetic_settings
+settings-cosmetics = プロフィールの装飾
+# Context: cosmetic_settings
+settings-cosmetics-decorations = アバターデコレーション
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = アバターの周りに表示される画像。
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = ネームプレート
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = メンバーリストとDMリストの名前の背後に表示される画像。
+# Context: cosmetic_settings
+settings-cosmetics-effects = プロフィールエフェクト
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = プロフィールカード上で再生されるアニメーション。
+# Context: cosmetic_settings
+settings-cosmetics-frames = プロフィールフレーム
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = プロフィールカードの周りに表示される画像。
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = 非表示にした装飾はダウンロードされません。変わるのはこのデバイスでの表示だけです。
+# Context: image_cache_settings
+settings-image-cache = 画像キャッシュ
+# Context: image_cache_settings
+settings-image-cache-media = メディアキャッシュ
+# Context: image_cache_settings
+settings-image-cache-media-description = アバター、バナー、プレビュー、スタンプ。
+# Context: image_cache_settings
+settings-image-cache-artwork = 共有画像キャッシュ
+# Context: image_cache_settings
+settings-image-cache-artwork-description = 絵文字、バッジ、サーバータグ、ロールアイコン、アバターデコレーション、ネームプレート。大きなメディアに押し出されないよう別に保存されます。
+# Context: image_cache_settings
+settings-image-cache-usage = { $limit } 中 { $used } を使用中。
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = 画像を読み込むと使用量が表示されます。
+# Context: image_cache_settings
+settings-image-cache-clear = 消去
+# Context: image_cache_settings
+settings-image-cache-clear-description = ダウンロード済みのこれらの画像を今すぐ削除します。メッセージ、下書き、ログインはそのままです。
+# Context: image_cache_settings
+settings-image-cache-retention = 未使用の画像を削除するまでの期間
+# Context: image_cache_settings
+settings-image-cache-retention-description = この期間表示されなかったキャッシュ画像はディスクから削除されます。
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count }日
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument

@@ -3501,6 +3501,56 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein nie zbiera danych telemetrycznych ani nie przesyła diagnostyki. Discord przechowuje dane po stronie usługi zgodnie ze swoimi własnymi zasadami.
 # Context: storage_page
 settings-storage-page-your-privacy = Twoja prywatność
+# Context: cosmetic_settings
+settings-cosmetics = Kosmetyki profilu
+# Context: cosmetic_settings
+settings-cosmetics-decorations = Dekoracje awatarów
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = Grafika wokół awatarów.
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = Tabliczki z nazwą
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = Grafika za nazwami na listach członków i wiadomości bezpośrednich.
+# Context: cosmetic_settings
+settings-cosmetics-effects = Efekty profilu
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = Animacje odtwarzane na kartach profilu.
+# Context: cosmetic_settings
+settings-cosmetics-frames = Ramki profilu
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = Grafika wokół kart profilu.
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = Ukryte kosmetyki nie są pobierane. Zmienia się tylko to, co pokazuje to urządzenie.
+# Context: image_cache_settings
+settings-image-cache = Pamięć podręczna obrazów
+# Context: image_cache_settings
+settings-image-cache-media = Pamięć podręczna multimediów
+# Context: image_cache_settings
+settings-image-cache-media-description = Awatary, banery, podglądy i naklejki.
+# Context: image_cache_settings
+settings-image-cache-artwork = Pamięć podręczna wspólnej grafiki
+# Context: image_cache_settings
+settings-image-cache-artwork-description = Emoji, odznaki, tagi serwerów, ikony ról, dekoracje awatarów i tabliczki z nazwą, przechowywane osobno, aby duże multimedia nigdy ich nie wypierały.
+# Context: image_cache_settings
+settings-image-cache-usage = Użyto { $used } z { $limit }.
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = Użycie pojawi się po wczytaniu obrazów.
+# Context: image_cache_settings
+settings-image-cache-clear = Wyczyść
+# Context: image_cache_settings
+settings-image-cache-clear-description = Od razu usuwa te pobrane obrazy. Wiadomości, wersje robocze i logowanie pozostają.
+# Context: image_cache_settings
+settings-image-cache-retention = Usuwaj nieużywane obrazy po
+# Context: image_cache_settings
+settings-image-cache-retention-description = Obrazy w pamięci podręcznej, które nie zostaną pokazane przez ten czas, są usuwane z dysku.
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count ->
+        [one] { $count } dniu
+        [few] { $count } dniach
+        [many] { $count } dniach
+       *[other] { $count } dnia
+    }
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument

@@ -3502,6 +3502,51 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein telemetri toplamaz veya tanılamayı yüklemez. Discord, hizmet tarafındaki verileri kendi politikalarına göre saklar.
 # Context: storage_page
 settings-storage-page-your-privacy = Gizliliğiniz
+# Context: cosmetic_settings
+settings-cosmetics = Profil kozmetikleri
+# Context: cosmetic_settings
+settings-cosmetics-decorations = Avatar süslemeleri
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = Avatarların çevresindeki görseller.
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = İsim plakaları
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = Üye ve doğrudan mesaj listelerinde isimlerin arkasındaki görseller.
+# Context: cosmetic_settings
+settings-cosmetics-effects = Profil efektleri
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = Profil kartlarının üzerinde oynatılan animasyonlar.
+# Context: cosmetic_settings
+settings-cosmetics-frames = Profil çerçeveleri
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = Profil kartlarının çevresindeki görseller.
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = Gizlenen kozmetikler indirilmez. Yalnızca bu cihazda gösterilenler değişir.
+# Context: image_cache_settings
+settings-image-cache = Görsel önbelleği
+# Context: image_cache_settings
+settings-image-cache-media = Medya önbelleği
+# Context: image_cache_settings
+settings-image-cache-media-description = Avatarlar, afişler, önizlemeler ve çıkartmalar.
+# Context: image_cache_settings
+settings-image-cache-artwork = Paylaşılan görsel önbelleği
+# Context: image_cache_settings
+settings-image-cache-artwork-description = Emojiler, rozetler, sunucu etiketleri, rol simgeleri, avatar süslemeleri ve isim plakaları; büyük medya dosyaları onları asla dışarı itmesin diye ayrı tutulur.
+# Context: image_cache_settings
+settings-image-cache-usage = { $limit } alanın { $used } kadarı kullanılıyor.
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = Kullanım, görseller yüklendiğinde görünür.
+# Context: image_cache_settings
+settings-image-cache-clear = Temizle
+# Context: image_cache_settings
+settings-image-cache-clear-description = İndirilen bu görselleri hemen kaldırır. Mesajlar, taslaklar ve oturumun kalır.
+# Context: image_cache_settings
+settings-image-cache-retention = Kullanılmayan görsellerin saklanma süresi
+# Context: image_cache_settings
+settings-image-cache-retention-description = Bu süre boyunca yeniden gösterilmeyen önbellek görselleri diskten silinir.
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count } gün
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument

@@ -3512,6 +3512,55 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein neshromažďuje telemetrii ani nenahrává diagnostiku. Discord uchovává data na straně služeb podle svých vlastních zásad.
 # Context: storage_page
 settings-storage-page-your-privacy = Vaše soukromí
+# Context: cosmetic_settings
+settings-cosmetics = Kosmetika profilu
+# Context: cosmetic_settings
+settings-cosmetics-decorations = Dekorace avatarů
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = Grafika kolem avatarů.
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = Jmenovky
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = Grafika za jmény v seznamech členů a přímých zpráv.
+# Context: cosmetic_settings
+settings-cosmetics-effects = Efekty profilu
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = Animace přehrávané přes karty profilů.
+# Context: cosmetic_settings
+settings-cosmetics-frames = Rámečky profilu
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = Grafika kolem karet profilů.
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = Skrytá kosmetika se nestahuje. Mění se jen to, co zobrazuje toto zařízení.
+# Context: image_cache_settings
+settings-image-cache = Mezipaměť obrázků
+# Context: image_cache_settings
+settings-image-cache-media = Mezipaměť médií
+# Context: image_cache_settings
+settings-image-cache-media-description = Avatary, bannery, náhledy a nálepky.
+# Context: image_cache_settings
+settings-image-cache-artwork = Mezipaměť sdílené grafiky
+# Context: image_cache_settings
+settings-image-cache-artwork-description = Emoji, odznaky, štítky serverů, ikony rolí, dekorace avatarů a jmenovky. Ukládají se zvlášť, aby je velká média nikdy nevytlačila.
+# Context: image_cache_settings
+settings-image-cache-usage = Využito { $used } z { $limit }.
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = Využití se zobrazí po načtení obrázků.
+# Context: image_cache_settings
+settings-image-cache-clear = Vymazat
+# Context: image_cache_settings
+settings-image-cache-clear-description = Hned odstraní tyto stažené obrázky. Zprávy, koncepty a přihlášení zůstanou.
+# Context: image_cache_settings
+settings-image-cache-retention = Odstranit nepoužívané obrázky po
+# Context: image_cache_settings
+settings-image-cache-retention-description = Obrázky v mezipaměti, které se tak dlouho nezobrazí, se smažou z disku.
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count ->
+        [one] { $count } dni
+        [few] { $count } dnech
+       *[other] { $count } dnech
+    }
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument

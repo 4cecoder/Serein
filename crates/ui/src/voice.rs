@@ -6243,6 +6243,7 @@ mod tests {
 					kind: Default::default(),
 					discriminator: 0,
 					primary_guild: None,
+					cosmetics: None,
 				}],
 				member_list_id: None,
 				tags: None,

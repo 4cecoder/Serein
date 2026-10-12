@@ -5168,7 +5168,12 @@ impl Desktop {
 			&& !self.state.demo
 			&& let Some(user) = &self.state.user
 		{
-			match avatars::AvatarWorker::start(&self.runtime, user.id, ctx.clone()) {
+			match avatars::AvatarWorker::start(
+				&self.runtime,
+				user.id,
+				ctx.clone(),
+				self.messaging.image_cache,
+			) {
 				Ok(worker) => self.avatars = Some(worker),
 				Err(error) => {
 					self.cache_error = true;
@@ -5203,7 +5208,12 @@ impl Desktop {
 		if self.avatar_cleanup.is_none()
 			&& let Some(account) = self.avatar_clear_account.take()
 		{
-			match avatars::AvatarWorker::start(&self.runtime, account, ctx.clone()) {
+			match avatars::AvatarWorker::start(
+				&self.runtime,
+				account,
+				ctx.clone(),
+				self.messaging.image_cache,
+			) {
 				Ok(worker) => self.avatar_cleanup = Some(worker.shutdown_and_clear()),
 				Err(error) => {
 					self.cache_error = true;
@@ -5225,7 +5235,12 @@ impl Desktop {
 			match if self.fixture_only || self.state.demo {
 				avatars::AvatarWorker::start_bundled(&self.runtime, ctx.clone())
 			} else {
-				avatars::AvatarWorker::start(&self.runtime, user.id, ctx.clone())
+				avatars::AvatarWorker::start(
+					&self.runtime,
+					user.id,
+					ctx.clone(),
+					self.messaging.image_cache,
+				)
 			} {
 				Ok(worker) => {
 					self.messaging.clear_avatars();
@@ -5239,6 +5254,11 @@ impl Desktop {
 			}
 		}
 		if let Some(worker) = &mut self.avatars {
+			worker.set_limits(self.messaging.image_cache);
+			if let Some(partition) = self.messaging.clear_image_cache.take() {
+				worker.clear_partition(partition);
+			}
+			self.messaging.image_cache_usage = worker.usage();
 			for _ in 0..32 {
 				let Some(result) = worker.poll() else {
 					break;

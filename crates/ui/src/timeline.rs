@@ -5777,6 +5777,7 @@ mod tests {
 				kind: Default::default(),
 				discriminator: 0,
 				primary_guild: None,
+				cosmetics: None,
 			},
 			content: "Synthetic text with enough words to wrap in a narrow viewport.".into(),
 			edited: false,
@@ -7565,6 +7566,7 @@ mod tests {
 				kind: Default::default(),
 				discriminator: 0,
 				primary_guild: None,
+				cosmetics: None,
 			}),
 			guilds: [1, 2]
 				.into_iter()
@@ -9330,6 +9332,7 @@ mod tests {
 				kind: Default::default(),
 				discriminator: 0,
 				primary_guild: None,
+				cosmetics: None,
 			},
 			content: "<#4> ".repeat(12),
 			author_nick: None,
@@ -9391,6 +9394,7 @@ mod tests {
 			kind: Default::default(),
 			discriminator: 0,
 			primary_guild: None,
+			cosmetics: None,
 		});
 		state.guilds.push(model::Guild {
 			id: Id(5),
@@ -9504,6 +9508,7 @@ mod tests {
 				kind: Default::default(),
 				discriminator: 0,
 				primary_guild: None,
+				cosmetics: None,
 			},
 			content: "||old revealed content||".into(),
 			edited: false,
@@ -9605,6 +9610,7 @@ mod tests {
 				kind: Default::default(),
 				discriminator: 0,
 				primary_guild: None,
+				cosmetics: None,
 			},
 			content: "Ordinary text".into(),
 			edited: false,

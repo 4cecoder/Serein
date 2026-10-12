@@ -1,5 +1,35 @@
 # Local storage policy and audit
 
+## Image cache settings and shared artwork (October 12, 2026)
+
+Each account's image disk cache now has two partitions. Media stays in
+`avatars/<account>`. Shared artwork lives in `avatars/<account>/artwork`. Shared artwork is
+custom emoji, profile badges, server tags, role icons, server icons, default avatars, avatar
+decorations and still nameplates. Because it has its own budget, a burst of large previews
+cannot evict it. The worker loads queued artwork before other inline images and after
+pictures opened in the viewer. On the first start after upgrading, already-cached
+artwork files that can be identified by name are moved into the new partition. Hashed names
+stay in media and age out normally.
+
+Settings › Storage › Image cache picks each budget from fixed presets:
+
+- Media: 256 MiB to 4 GiB, default 1 GiB. Files are capped at budget / 256 KiB, so the
+  default keeps 4,096.
+- Shared artwork: 64 to 512 MiB, default 128 MiB. Files are capped at budget / 32 KiB.
+- Retention of images not shown again: 7, 30, 90, 180 or 365 days, default 90.
+
+Values outside the presets are rejected when saved. A smaller budget or shorter retention
+evicts immediately, oldest first. The page shows the measured bytes of each partition and
+can clear either one without stopping image loading. The existing Clear cache still removes
+both partitions with history. Logout still removes the whole account directory.
+
+Settings › Appearance › Profile cosmetics turns on avatar decorations, nameplates, profile
+effects and profile frames for this device. All four are opt-in and off by default. Hidden
+cosmetics are not drawn and their artwork is not requested. Hidden effects and frames also
+skip the optional catalog read for new profile loads. Turning them on drops the RAM profile
+cache so details reload. Both preferences live in the bounded `app_preferences` row; older
+rows load with every cosmetic hidden and the historical budgets.
+
 ## Off-screen artwork retention (October 10, 2026)
 
 Avatar, banner, activity, sticker, GIF-picker and custom/high-resolution emoji
@@ -653,7 +683,7 @@ The owner explicitly withdrew the no-storage policy on 2026-09-09. Local files, 
 | Remembered accounts (switcher) | `accounts` table in `client.sqlite3`: at most 8 rows of account ID, username, display name (64 bytes each), avatar hash, last-use timestamp and a flag recording whether the credential store holds that account's entry; no token | Logging out of, or forgetting, that account; the least recently used row is pruned past 8, taking its token and cached data with it |
 | History and drafts | `SEREIN_DATA_DIR/client.sqlite3` when an absolute override is set; otherwise `dirs::data_local_dir()/serein-development/client.sqlite3` for default source builds and `dirs::data_local_dir()/serein/client.sqlite3` for packaged builds | Clear cached history also clears service images and keeps drafts; logout clears the authenticated account’s history and drafts |
 | Messages | 500 per window, at most 20 stored channel windows globally, 48 MiB estimated text/metadata; SQLite main database capped at 64 MiB | Oldest touched channel evicted transactionally |
-| Avatar, server-icon, profile-banner and message-preview PNGs | Account subdirectory beneath the selected application-data root's `avatars`; 1 GiB / 4096 files per account, 90 days since last use, at most 2 MiB per preview (512 KiB for icons/avatars) | Clear cache or account logout; versioned avatar/icon/banner keys and hashed media-source keys separate changed images |
+| Avatar, server-icon, profile-banner and message-preview PNGs | Account subdirectory beneath the selected application-data root's `avatars`; media defaults to 1 GiB / 4096 files per account (owner presets 256 MiB–4 GiB), shared artwork (emoji, badges, server tags and icons, role icons, decorations, nameplates) to 128 MiB / 4096 files in `artwork/` (presets 64–512 MiB), 90 days since last use by default (presets 7–365), at most 2 MiB per preview (512 KiB for icons/avatars) | Clear cache, per-partition clear in Settings › Storage, or account logout; versioned avatar/icon/banner keys and hashed media-source keys separate changed images |
 | Selected profile metadata | One session-memory record, at most 64 KiB; profile response body at most 256 KiB | Closing/changing the profile, session reset or logout; no SQLite profile table |
 | Explicit attachment downloads | User-selected destination, 1 byte through 100 MiB per original file; one active dialog/transfer; randomized sibling partial while writing | Cancel/error removes the partial when possible; completed downloads remain user-owned outside cache cleanup |
 | Selected upload source | Up to ten session-only paths (4096 encoded bytes each), filenames (256 UTF-8 bytes each) and size/modified metadata; 500,000,000 bytes total, read in 64 KiB chunks | Removal, send completion/failure, cancellation or session teardown; sources are never copied to recovery/cache files or deleted |
@@ -760,7 +790,7 @@ disconnect or session reset; member lookups are temporary. Disconnected states a
 admitted for voice do not consume the actual roster's count budget. The 4 MiB wire bound and
 the actual roster's 4,096-entry / 1 MiB bounds are unchanged; no new disk storage is introduced.
 
-Image attachment metadata remains bounded by 10 attachments / 64 KiB retained metadata and 256 KiB JSON per message, including original/proxy signed URLs. It counts toward existing window, pending-patch and database budgets. Decoded pixels reuse the shared media worker/cache; spoiler attachments are not requested before explicit reveal. Profile metadata (bio, pronouns, badges, connections and mutual-server summaries) stays in the single bounded RAM view. Profile and server-specific banner/avatar pixels may remain in the shared account image cache after closing the profile; cache clear/logout removes them under the same policy.
+Image attachment metadata remains bounded by 10 attachments / 64 KiB retained metadata and 256 KiB JSON per message, including original/proxy signed URLs. It counts toward existing window, pending-patch and database budgets. Decoded pixels reuse the shared media worker/cache; spoiler attachments are not requested before explicit reveal. Profile metadata (bio, pronouns, badges, connections and mutual-server summaries) stays in the single bounded RAM view. Profile and server-specific banner/avatar pixels may remain in the shared account image cache after closing the profile; cache clear/logout removes them under the same policy. Equipped cosmetics (decoration, nameplate, effect and frame details) are display-only RAM values that are never written to SQLite. Decoration and still-nameplate artwork use the shared-artwork partition; effect layers, frame layers and animated nameplates use the media partition. Cosmetics hidden in Settings are not requested. Profile effect and frame catalog details are kept in a session-only cache of at most 64 SKUs.
 
 Explicit Download creates an original attachment file only at the user-selected location. Suggested filenames are sanitized; downloads never reinterpret message filenames as destination paths, follow redirects, or send credentials to the CDN. Existing regular files are replaced only after native Save confirmation and a complete, flushed transfer. A new destination is published without overwriting a file created meanwhile. The one worker closes/removes its sibling partial on cancellation or failure; cleanup failures are visible. Forced termination or a filesystem error can leave a `.serein-*.partial` sibling, and macOS, Linux and Windows publish new files with exclusive native moves so hard-link support is not required. Normal close waits for the active worker; a cancelled native dialog must still be dismissed. Downloads are explicit user files, not account cache entries, and survive logout/cache clearing. Limits and transfer bounds are strictly enforced.
 

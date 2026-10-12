@@ -3501,6 +3501,54 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein ne collecte pas de télémétrie et ne télécharge pas de diagnostics. Discord conserve les données côté service conformément à ses propres politiques.
 # Context: storage_page
 settings-storage-page-your-privacy = Votre vie privée
+# Context: cosmetic_settings
+settings-cosmetics = Cosmétiques de profil
+# Context: cosmetic_settings
+settings-cosmetics-decorations = Décorations d’avatar
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = Illustrations autour des avatars.
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = Plaques de nom
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = Illustrations derrière les noms dans les listes de membres et de messages privés.
+# Context: cosmetic_settings
+settings-cosmetics-effects = Effets de profil
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = Animations jouées sur les cartes de profil.
+# Context: cosmetic_settings
+settings-cosmetics-frames = Cadres de profil
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = Illustrations autour des cartes de profil.
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = Les cosmétiques masqués ne sont pas téléchargés. Seul l’affichage sur cet appareil change.
+# Context: image_cache_settings
+settings-image-cache = Cache d’images
+# Context: image_cache_settings
+settings-image-cache-media = Cache multimédia
+# Context: image_cache_settings
+settings-image-cache-media-description = Avatars, bannières, aperçus et stickers.
+# Context: image_cache_settings
+settings-image-cache-artwork = Cache d’illustrations partagées
+# Context: image_cache_settings
+settings-image-cache-artwork-description = Emojis, badges, tags de serveur, icônes de rôle, décorations d’avatar et plaques de nom, stockés à part pour que les gros médias ne les évincent jamais.
+# Context: image_cache_settings
+settings-image-cache-usage = { $used } sur { $limit } utilisés.
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = L’utilisation s’affiche une fois les images chargées.
+# Context: image_cache_settings
+settings-image-cache-clear = Vider
+# Context: image_cache_settings
+settings-image-cache-clear-description = Supprime maintenant ces images téléchargées. Les messages, brouillons et votre connexion sont conservés.
+# Context: image_cache_settings
+settings-image-cache-retention = Supprimer les images inutilisées après
+# Context: image_cache_settings
+settings-image-cache-retention-description = Les images en cache non affichées pendant cette durée sont supprimées du disque.
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count ->
+        [one] { $count } jour
+       *[other] { $count } jours
+    }
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument

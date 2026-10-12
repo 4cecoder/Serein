@@ -3501,6 +3501,54 @@ settings-storage-page-removes-cached-messages-and-media-drafts-and-your-login-st
 settings-storage-page-serein-does-not-collect-telemetry-or-upload-diagnostics-discord-retains = Serein erfasst keine Telemetriedaten und lädt keine Diagnosedaten hoch. Discord speichert dienstseitige Daten gemäß seinen eigenen Richtlinien.
 # Context: storage_page
 settings-storage-page-your-privacy = Ihre Privatsphäre
+# Context: cosmetic_settings
+settings-cosmetics = Profil-Kosmetik
+# Context: cosmetic_settings
+settings-cosmetics-decorations = Avatar-Dekorationen
+# Context: cosmetic_settings
+settings-cosmetics-decorations-description = Grafiken rund um Avatare.
+# Context: cosmetic_settings
+settings-cosmetics-nameplates = Namensschilder
+# Context: cosmetic_settings
+settings-cosmetics-nameplates-description = Grafiken hinter Namen in Mitglieder- und Direktnachrichtenlisten.
+# Context: cosmetic_settings
+settings-cosmetics-effects = Profileffekte
+# Context: cosmetic_settings
+settings-cosmetics-effects-description = Animationen über Profilkarten.
+# Context: cosmetic_settings
+settings-cosmetics-frames = Profilrahmen
+# Context: cosmetic_settings
+settings-cosmetics-frames-description = Grafiken rund um Profilkarten.
+# Context: cosmetic_settings
+settings-cosmetics-hidden-are-not-downloaded = Ausgeblendete Kosmetik wird nicht heruntergeladen. Das ändert nur die Anzeige auf diesem Gerät.
+# Context: image_cache_settings
+settings-image-cache = Bild-Cache
+# Context: image_cache_settings
+settings-image-cache-media = Medien-Cache
+# Context: image_cache_settings
+settings-image-cache-media-description = Avatare, Banner, Vorschauen und Sticker.
+# Context: image_cache_settings
+settings-image-cache-artwork = Cache für gemeinsame Grafiken
+# Context: image_cache_settings
+settings-image-cache-artwork-description = Emojis, Abzeichen, Server-Tags, Rollensymbole, Avatar-Dekorationen und Namensschilder – getrennt gespeichert, damit große Medien sie nie verdrängen.
+# Context: image_cache_settings
+settings-image-cache-usage = { $used } von { $limit } belegt.
+# Context: image_cache_settings
+settings-image-cache-usage-unavailable = Die Belegung erscheint, sobald Bilder geladen sind.
+# Context: image_cache_settings
+settings-image-cache-clear = Leeren
+# Context: image_cache_settings
+settings-image-cache-clear-description = Entfernt diese heruntergeladenen Bilder sofort. Nachrichten, Entwürfe und deine Anmeldung bleiben.
+# Context: image_cache_settings
+settings-image-cache-retention = Ungenutzte Bilder entfernen nach
+# Context: image_cache_settings
+settings-image-cache-retention-description = Zwischengespeicherte Bilder, die so lange nicht angezeigt werden, werden von der Festplatte gelöscht.
+# Context: image_cache_settings
+settings-image-cache-days =
+    { $count ->
+        [one] { $count } Tag
+       *[other] { $count } Tagen
+    }
 
 ## crates/ui/src/slash_commands.rs
 # Context: argument
