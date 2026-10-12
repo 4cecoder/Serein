@@ -5255,8 +5255,12 @@ impl Desktop {
 		}
 		if let Some(worker) = &mut self.avatars {
 			worker.set_limits(self.messaging.image_cache);
-			if let Some(partition) = self.messaging.clear_image_cache.take() {
-				worker.clear_partition(partition);
+			if let Some(partition) = self.messaging.clear_image_cache.take()
+				&& !worker.clear_partition(partition)
+			{
+				// The worker's queue is full; keep the request for the next frame.
+				self.messaging.clear_image_cache = Some(partition);
+				ctx.request_repaint();
 			}
 			self.messaging.image_cache_usage = worker.usage();
 			for _ in 0..32 {

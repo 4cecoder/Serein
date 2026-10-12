@@ -511,12 +511,16 @@ impl AvatarWorker {
 			changed
 		});
 	}
-	/// Empties one partition without stopping image loading. A repeated click while an
-	/// earlier removal is still queued needs no second request.
-	pub fn clear_partition(&self, partition: model::CachePartition) {
-		if !self.bundled_only {
-			let _ = self.clear_partition.try_send(partition);
-		}
+	/// Empties one partition without stopping image loading. False only while the worker's
+	/// queue is full, so the caller keeps the request and retries; a stopped worker or the
+	/// bundled demo worker has nothing to clear.
+	#[must_use]
+	pub fn clear_partition(&self, partition: model::CachePartition) -> bool {
+		self.bundled_only
+			|| !matches!(
+				self.clear_partition.try_send(partition),
+				Err(async_mpsc::error::TrySendError::Full(_))
+			)
 	}
 	/// Latest measured disk use, or `None` before the caches were opened.
 	pub fn usage(&self) -> Option<Usage> {
