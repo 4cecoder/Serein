@@ -4717,3 +4717,11 @@ composer-placeholder = Messaggio
 composer-placeholder-channel = Invia un messaggio in #{ $channel }
 # Context: composer_placeholder
 composer-placeholder-direct = Invia un messaggio a @{ $name }
+
+# Context: timeline_dm_intro
+timeline-dm-intro = Questo è l'inizio della cronologia dei messaggi diretti con { $name }.
+
+# Context: timeline_channel_intro
+timeline-channel-intro-title = Benvenuto in #{ $channel }!
+# Context: timeline_channel_intro
+timeline-channel-intro-start = Questo è l'inizio del canale #{ $channel }.

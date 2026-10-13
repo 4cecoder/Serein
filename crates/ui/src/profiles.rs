@@ -505,7 +505,7 @@ fn clan_chip(
 /// Discord's official support request form. No supported in-app reporting API is used.
 const REPORT_URL: &str = "https://support.discord.com/hc/en-us/requests/new";
 
-/// Best known account username: the loaded profile, then the relationship lists.
+/// Best known account username: a loaded or recently cached profile, then the relationship lists.
 pub(crate) fn known_username(state: &State, user: Id) -> Option<String> {
 	state
 		.profile
@@ -518,6 +518,11 @@ pub(crate) fn known_username(state: &State, user: Id) -> Option<String> {
 				.data
 				.as_ref()
 				.filter(|data| data.user.id == user && !data.username.is_empty())
+		})
+		.or_else(|| {
+			state
+				.known_profile(user)
+				.filter(|data| !data.username.is_empty())
 		})
 		.map(|data| data.username.clone())
 		.or_else(|| state.friend_username(user).map(str::to_owned))
@@ -592,13 +597,13 @@ pub(crate) fn report_button(ui: &mut egui::Ui, user: &User) {
 	}
 }
 
-fn friend_target(state: &State, user: &User) -> bool {
+pub(crate) fn friend_target(state: &State, user: &User) -> bool {
 	!user.webhook
 		&& user.kind == model::AccountKind::Human
 		&& state.user.as_ref().is_some_and(|own| own.id != user.id)
 }
 /// Whether the account may send relationship and moderation requests right now.
-fn actions_enabled(state: &State) -> bool {
+pub(crate) fn actions_enabled(state: &State) -> bool {
 	!state.user_action_pending()
 		&& (state.demo
 			|| (state.gateway_connected

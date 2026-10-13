@@ -4802,3 +4802,11 @@ composer-placeholder = Zpráva
 composer-placeholder-channel = Zpráva do #{ $channel }
 # Context: composer_placeholder
 composer-placeholder-direct = Zpráva pro @{ $name }
+
+# Context: timeline_dm_intro
+timeline-dm-intro = Toto je začátek vaší historie přímých zpráv s uživatelem { $name }.
+
+# Context: timeline_channel_intro
+timeline-channel-intro-title = Vítejte v #{ $channel }!
+# Context: timeline_channel_intro
+timeline-channel-intro-start = Toto je začátek kanálu #{ $channel }.

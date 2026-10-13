@@ -4703,3 +4703,11 @@ composer-placeholder = メッセージ
 composer-placeholder-channel = #{ $channel }へメッセージを送信
 # Context: composer_placeholder
 composer-placeholder-direct = @{ $name }へメッセージを送信
+
+# Context: timeline_dm_intro
+timeline-dm-intro = { $name } とのダイレクトメッセージ履歴の始まりです。
+
+# Context: timeline_channel_intro
+timeline-channel-intro-title = #{ $channel } へようこそ！
+# Context: timeline_channel_intro
+timeline-channel-intro-start = #{ $channel } チャンネルの始まりです。

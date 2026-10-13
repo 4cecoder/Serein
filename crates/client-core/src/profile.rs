@@ -51,6 +51,17 @@ impl ProfileCache {
 			.map(|entry| size_of::<CachedProfile>() + entry.data.bytes())
 			.sum()
 	}
+	/// A cached, unexpired global profile, without refreshing or evicting anything.
+	fn peek(&self, user: Id, now: Instant) -> Option<&UserProfile> {
+		self.entries
+			.iter()
+			.find(|entry| {
+				entry.user == user
+					&& entry.guild.is_none()
+					&& now.saturating_duration_since(entry.fetched) < CACHE_TTL
+			})
+			.map(|entry| &entry.data)
+	}
 	pub fn len(&self) -> usize {
 		self.entries.len()
 	}
@@ -86,6 +97,14 @@ pub struct OwnProfile {
 }
 
 impl State {
+	/// An already loaded global profile for `user`: the open view or the recent cache.
+	pub fn known_profile(&self, user: Id) -> Option<&UserProfile> {
+		self.profile
+			.as_ref()
+			.filter(|view| view.user == user && view.guild.is_none())
+			.and_then(|view| view.data.as_ref())
+			.or_else(|| self.profile_cache.peek(user, Instant::now()))
+	}
 	pub fn can_save_own_profile(&self) -> bool {
 		(self.demo || (self.auth == AuthState::Authenticated && self.gateway_connected))
 			&& !self.own_profile.loading
