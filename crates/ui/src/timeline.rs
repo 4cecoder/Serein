@@ -2091,12 +2091,19 @@ impl TimelineView {
 			self.initial_read_checked = true;
 			if unread {
 				self.mark_read = None;
+				// Opening an unread conversation at its latest messages reads it, as in the
+				// official client: the banner clears while the divider keeps its place for
+				// this visit. Only an unread section that starts above the loaded page keeps
+				// its banner, since Jump to unread is then the way to its first message.
 				let arrived_on_live_edge = self.following
 					&& state
 						.channel(channel)
 						.is_some_and(|channel| channel.supports_text())
 					&& state.timeline.iter().next().is_some();
-				if arrived_on_live_edge {
+				let section_loaded = state.older_exhausted
+					|| matches!(state.read_marker(channel), Some(Some(read))
+						if state.timeline.iter().next().is_some_and(|first| first.id <= read));
+				if arrived_on_live_edge && !section_loaded {
 					self.hold_read_ack = true;
 				}
 			}
@@ -5760,15 +5767,12 @@ mod tests {
 			for _ in 0..5 {
 				let labels = banner_frame(&ctx, &mut view, &mut state, vec![], false);
 				if tall {
-					assert!(view.following && view.hold_read_ack && view.mark_read.is_none());
+					// Tall unread content opens at its latest message and is read there.
+					assert!(view.following && !view.hold_read_ack);
 					assert!(
 						view.scroll_offset > 400.0,
 						"unread join opened at offset {}",
 						view.scroll_offset
-					);
-					assert!(
-						labels.iter().any(|(text, _)| text == "Mark as read"),
-						"unread join at the bottom hid the banner: {labels:?}"
 					);
 					continue;
 				}
@@ -5787,14 +5791,15 @@ mod tests {
 					}
 					assert!(!view.hold_read_ack && view.following);
 				} else {
+					// Opening a short unread channel reads it; the banner does not stay up.
 					assert!(
-						labels.iter().any(|(text, _)| text == "Mark as read"),
-						"unacked short join hid the banner: {labels:?}"
+						!labels.iter().any(|(text, _)| text == "Mark as read"),
+						"a short unread channel kept its banner after opening: {labels:?}"
 					);
-					assert!(view.following && view.hold_read_ack && view.mark_read.is_none());
+					assert!(view.following && !view.hold_read_ack);
 				}
 			}
-			assert_eq!(view.mark_read, (count == 0).then_some(Id(latest)));
+			assert_eq!(view.mark_read, Some(Id(latest)));
 			if tall {
 				// Scrolling to the live edge of tall unread content acknowledges it and resolves
 				// both banners, even when the service latest ID names a deleted message.
@@ -5832,38 +5837,6 @@ mod tests {
 						"tall stale channel still showed {forbidden}"
 					);
 				}
-			}
-			if count == 1 && !tall {
-				// A short channel never scrolls, so the banner offers to acknowledge it directly.
-				let labels = banner_frame(&ctx, &mut view, &mut state, vec![], false);
-				let pos = labels
-					.iter()
-					.find(|(text, _)| text == "Mark as read")
-					.map(|(_, rect)| rect.center())
-					.expect("the unread banner offers Mark as read");
-				for pressed in [true, false] {
-					banner_frame(
-						&ctx,
-						&mut view,
-						&mut state,
-						vec![
-							egui::Event::PointerMoved(pos),
-							egui::Event::PointerButton {
-								pos,
-								button: egui::PointerButton::Primary,
-								pressed,
-								modifiers: egui::Modifiers::NONE,
-							},
-						],
-						false,
-					);
-				}
-				assert_eq!(view.mark_channel_read.take(), Some(Id(20)));
-				let labels = banner_frame(&ctx, &mut view, &mut state, vec![], false);
-				assert!(
-					!labels.iter().any(|(text, _)| text == "Mark as read"),
-					"Mark as read left the banner up: {labels:?}"
-				);
 			}
 			if count == 1 && !tall && latest == 20 {
 				// A read snapshot arriving after a local reply jump must not resume reading.
@@ -8077,22 +8050,22 @@ mod tests {
 		labels
 	}
 
-	fn expect_unread_held(view: &TimelineView, labels: &[(String, egui::Rect)], step: &str) {
+	fn expect_read_on_open(view: &mut TimelineView, latest: u64, step: &str) {
 		assert!(
-			view.hold_read_ack && view.mark_read.is_none() && view.following,
-			"{step}: hold={} following={} mark_read={:?}",
+			!view.hold_read_ack && view.following,
+			"{step}: hold={} following={}",
 			view.hold_read_ack,
-			view.following,
-			view.mark_read
+			view.following
 		);
-		assert!(
-			labels.iter().any(|(text, _)| text == "Mark as read"),
-			"{step} removed the unread banner: {labels:?}"
+		assert_eq!(
+			view.mark_read.take(),
+			Some(Id(latest)),
+			"{step} did not acknowledge the conversation it opened"
 		);
 	}
 
 	#[test]
-	fn server_switch_keeps_the_unread_banner_until_a_downward_scroll() {
+	fn server_and_channel_switches_read_each_unread_conversation_on_open() {
 		let ctx = egui::Context::default();
 		let mut state = unread_servers();
 		let mut view = TimelineView::default();
@@ -8102,24 +8075,24 @@ mod tests {
 			Some(client_core::Command::History { .. })
 		));
 		deliver_unread(&mut state, Id(10), 101);
-		let labels = settle_banner(&ctx, &mut view, &mut state);
-		expect_unread_held(&view, &labels, "channel open");
+		settle_banner(&ctx, &mut view, &mut state);
+		expect_read_on_open(&mut view, 101, "channel open");
 
 		assert!(matches!(
 			state.select(Id(11)),
 			Some(client_core::Command::History { .. })
 		));
 		deliver_unread(&mut state, Id(11), 201);
-		let labels = settle_banner(&ctx, &mut view, &mut state);
-		expect_unread_held(&view, &labels, "channel switch");
+		settle_banner(&ctx, &mut view, &mut state);
+		expect_read_on_open(&mut view, 201, "channel switch");
 
 		assert!(matches!(
 			state.select(Id(10)),
 			Some(client_core::Command::History { .. })
 		));
 		deliver_unread(&mut state, Id(10), 101);
-		let labels = settle_banner(&ctx, &mut view, &mut state);
-		expect_unread_held(&view, &labels, "channel return");
+		settle_banner(&ctx, &mut view, &mut state);
+		expect_read_on_open(&mut view, 101, "channel return");
 
 		assert!(matches!(
 			state.select_guild(Id(2)),
@@ -8129,8 +8102,8 @@ mod tests {
 			})
 		));
 		deliver_unread(&mut state, Id(20), 301);
-		let labels = settle_banner(&ctx, &mut view, &mut state);
-		expect_unread_held(&view, &labels, "server open");
+		settle_banner(&ctx, &mut view, &mut state);
+		expect_read_on_open(&mut view, 301, "server open");
 
 		assert!(matches!(
 			state.select_guild(Id(1)),
@@ -8140,40 +8113,80 @@ mod tests {
 			})
 		));
 		deliver_unread(&mut state, Id(10), 101);
-		let labels = settle_banner(&ctx, &mut view, &mut state);
-		expect_unread_held(&view, &labels, "server return");
-
-		banner_frame(
-			&ctx,
-			&mut view,
-			&mut state,
-			vec![
-				egui::Event::PointerMoved(egui::pos2(450.0, 300.0)),
-				egui::Event::MouseWheel {
-					unit: egui::MouseWheelUnit::Point,
-					delta: egui::vec2(0.0, -80.0),
-					modifiers: egui::Modifiers::NONE,
-					phase: egui::TouchPhase::Move,
-					source: egui::MouseWheelSource::Unknown,
-				},
-			],
-			false,
-		);
-		assert_eq!(view.mark_read, Some(Id(101)));
-		assert!(!view.hold_read_ack);
+		settle_banner(&ctx, &mut view, &mut state);
+		expect_read_on_open(&mut view, 101, "server return");
 	}
 
 	#[test]
-	fn initial_unread_join_waits_for_a_downward_reach() {
-		for (marker, width, dark) in [
-			(Some(Id(10)), 320.0, false),
-			(None, 900.0, true),
-			(Some(Id(19)), 900.0, true),
+	fn opening_an_unread_thread_reads_it() {
+		// The synthetic forum post 27 lives in server 10 under forum 26.
+		let mut state = test_support::demo_state();
+		state.gateway_connected = true;
+		state.auth = client_core::auth::AuthState::Authenticated;
+		let thread = Id(27);
+		let Some(client_core::Command::History { request, .. }) = state.select(thread) else {
+			panic!("thread history requested");
+		};
+		let latest = 1_542_322_755_993_600_000u64;
+		state
+			.channels
+			.iter_mut()
+			.find(|c| c.id == thread)
+			.unwrap()
+			.last_message = Some(Id(latest));
+		let messages = [latest, latest - 1]
+			.into_iter()
+			.map(|id| {
+				let mut message = text_message(id);
+				message.channel = thread;
+				message
+			})
+			.collect();
+		state.apply(client_core::Envelope {
+			generation: state.generation,
+			event: client_core::Event::History {
+				channel: thread,
+				request,
+				older: false,
+				messages,
+			},
+		});
+		state
+			.apply_read_state(client_core::read_state::Event::Snapshot {
+				entries: Some(vec![(thread, Some(Id(latest - 2)), 0)]),
+				version: Some(1),
+				partial: false,
+			})
+			.unwrap();
+		assert_eq!(state.unread(thread), Some(true));
+		let ctx = egui::Context::default();
+		let mut view = TimelineView::default();
+		let labels = settle_banner(&ctx, &mut view, &mut state);
+		assert!(view.following && !view.hold_read_ack);
+		assert_eq!(view.mark_read.take(), Some(Id(latest)));
+		assert!(
+			!plain(&labels)
+				.iter()
+				.any(|text| text.contains("new message")),
+			"opening the thread left its banner up: {labels:?}"
+		);
+	}
+
+	#[test]
+	fn initial_unread_join_reads_on_arrival() {
+		// A marker below the loaded page (10) leaves an unread section above it: the banner's
+		// Jump to unread stays the way there. Otherwise opening reads the conversation.
+		for (marker, width, dark, kind, older_exhausted) in [
+			(Some(Id(10)), 320.0, false, 1, false),
+			(Some(Id(10)), 320.0, false, 1, true),
+			(None, 900.0, true, 1, true),
+			(Some(Id(19)), 900.0, true, 1, false),
 		] {
 			let mut state = State {
 				auth: client_core::auth::AuthState::Authenticated,
 				gateway_connected: true,
 				freshness: model::Freshness::Fresh,
+				older_exhausted,
 				selected: Some(Id(20)),
 				channels: vec![model::Channel {
 					id: Id(20),
@@ -8181,7 +8194,7 @@ mod tests {
 					parent_id: None,
 					position: 0,
 					name: "Synthetic unread conversation".into(),
-					kind: 1,
+					kind,
 					recipients: vec![],
 					member_list_id: None,
 					tags: None,
@@ -8253,30 +8266,16 @@ mod tests {
 			for _ in 0..3 {
 				frame(&mut view, &mut state, vec![]);
 			}
-			assert!(view.following && view.hold_read_ack);
-			assert!(
-				view.mark_read.is_none(),
-				"Opening an unread channel must not acknowledge until the user scrolls toward the bottom"
+			let section_loaded = older_exhausted || marker != Some(Id(10));
+			assert!(view.following);
+			assert_eq!(
+				view.hold_read_ack, !section_loaded,
+				"kind {kind} marker {marker:?}"
 			);
-			frame(
-				&mut view,
-				&mut state,
-				vec![
-					egui::Event::PointerMoved(egui::pos2(width / 2.0, 300.0)),
-					egui::Event::MouseWheel {
-						unit: egui::MouseWheelUnit::Point,
-						delta: egui::vec2(0.0, -80.0),
-						modifiers: egui::Modifiers::NONE,
-						phase: egui::TouchPhase::Move,
-						source: egui::MouseWheelSource::Unknown,
-					},
-				],
-			);
-			assert!(!view.hold_read_ack && view.following);
 			assert_eq!(
 				view.mark_read.take(),
-				Some(Id(20)),
-				"A downward reach at the live edge acknowledges the unread join"
+				section_loaded.then_some(Id(20)),
+				"kind {kind} marker {marker:?}: opening reads a loaded unread section"
 			);
 		}
 	}
@@ -8327,29 +8326,11 @@ mod tests {
 		for _ in 0..3 {
 			labels = banner_frame(&ctx, &mut view, &mut state, vec![], false);
 		}
+		// Opening at the live edge reads the section: the divider marks it, no banner stays.
 		assert_eq!(view.unread_boundary, Some(Id(33)));
 		assert!(
-			labels.iter().any(|(text, _)| text
-				.replace(['\u{2068}', '\u{2069}'], "")
-				.starts_with("8 new messages since")),
-			"the banner counts the unread section: {labels:?}"
-		);
-		// Reading down to the live edge acknowledges the section and dismisses its banner.
-		banner_frame(
-			&ctx,
-			&mut view,
-			&mut state,
-			vec![
-				egui::Event::PointerMoved(egui::pos2(450.0, 300.0)),
-				egui::Event::MouseWheel {
-					unit: egui::MouseWheelUnit::Point,
-					delta: egui::vec2(0.0, -80.0),
-					modifiers: egui::Modifiers::NONE,
-					phase: egui::TouchPhase::Move,
-					source: egui::MouseWheelSource::Unknown,
-				},
-			],
-			false,
+			!labels.iter().any(|(text, _)| text.contains("new message")),
+			"opening the conversation left its banner up: {labels:?}"
 		);
 		assert_eq!(view.mark_read.take(), Some(Id(40)));
 		marker(&mut state, 40, 2);
@@ -8372,6 +8353,35 @@ mod tests {
 			"a seen arrival must not revive the dismissed banner: {labels:?}"
 		);
 		assert_eq!(view.mark_read.take(), Some(Id(41)));
+	}
+
+	#[test]
+	fn an_unread_section_above_the_page_keeps_its_banner_and_mark_as_read() {
+		let ctx = egui::Context::default();
+		let mut state = live_unread_channel(8);
+		state.older_exhausted = false;
+		// A deleted row below the marker keeps only its ID, not a loaded unread section.
+		state
+			.timeline
+			.insert(text_message(5), false, false)
+			.unwrap();
+		state.timeline.delete(Id(5)).unwrap();
+		assert_eq!(state.timeline.row_ids().next(), Some(Id(5)));
+		let mut view = TimelineView::default();
+		let labels = settle_banner(&ctx, &mut view, &mut state);
+		assert!(view.following && view.hold_read_ack && view.mark_read.is_none());
+		let pos = labels
+			.iter()
+			.find(|(text, _)| text == "Mark as read")
+			.map(|(_, rect)| rect.center())
+			.expect("the held unread banner offers Mark as read");
+		click_at(&ctx, &mut view, &mut state, pos);
+		assert_eq!(view.mark_channel_read.take(), Some(Id(20)));
+		let labels = banner_frame(&ctx, &mut view, &mut state, vec![], false);
+		assert!(
+			!labels.iter().any(|(text, _)| text == "Mark as read"),
+			"Mark as read left the banner up: {labels:?}"
+		);
 	}
 
 	/// A synthetic DM with messages 11..=40 loaded and a read marker at `read`.
@@ -8498,24 +8508,17 @@ mod tests {
 	}
 
 	#[test]
-	fn marking_read_resets_the_banner_and_later_arrivals_stay_read_at_the_bottom() {
+	fn opening_reads_the_section_and_later_arrivals_stay_read_at_the_bottom() {
 		let ctx = egui::Context::default();
 		let mut state = live_unread_channel(32);
 		let mut view = TimelineView::default();
-		let labels = settle_banner(&ctx, &mut view, &mut state);
+		let labels = plain(&settle_banner(&ctx, &mut view, &mut state));
+		// Opening at the live edge reads the section instead of leaving its banner up.
 		assert!(
-			plain(&labels)
-				.iter()
-				.any(|text| text.starts_with("8 new messages since")),
+			!labels.iter().any(|text| text.contains("new message")),
 			"{labels:?}"
 		);
-		let pos = labels
-			.iter()
-			.find(|(text, _)| text == "Mark as read")
-			.map(|(_, rect)| rect.center())
-			.expect("the unread banner offers Mark as read");
-		click_at(&ctx, &mut view, &mut state, pos);
-		assert_eq!(view.mark_channel_read.take(), Some(Id(20)));
+		assert_eq!(view.mark_read.take(), Some(Id(40)));
 		// A message arrives before the acknowledgement round trip completes, and another after.
 		arrive(&mut state, 41);
 		let labels = plain(&settle_banner(&ctx, &mut view, &mut state));
