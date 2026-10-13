@@ -1347,13 +1347,17 @@ impl Avatars {
 					},
 				})
 			});
+		// A favorite's saved Discord attachment link lacks the expiring signature and is
+		// refused; the embed's own media is the same GIF, freshly signed, and plays as is.
 		let original = gif
-			.filter(|gif| self.animate_gifs && gif.url.ends_with(".gif"))
+			.filter(|gif| {
+				self.animate_gifs
+					&& gif.url.ends_with(".gif")
+					&& !model::valid_discord_media_url(&gif.url)
+			})
 			.map(|gif| model::EmbedMedia {
 				url: Some(gif.url.clone()),
-				proxy_url: (!model::valid_gif_preview(&gif.url)
-					&& !model::valid_discord_media_url(&gif.url))
-				.then(|| gif.preview.clone()),
+				proxy_url: (!model::valid_gif_preview(&gif.url)).then(|| gif.preview.clone()),
 				width: gif.width,
 				height: gif.height,
 				placeholder: poster
@@ -1959,6 +1963,45 @@ mod tests {
 		assert_eq!(images.textures.len(), 1);
 		assert!(images.attempts["thumb:ffffffffffff"].1);
 	}
+	#[test]
+	fn favorited_attachment_gif_plays_from_the_embeds_signed_link() {
+		let ctx = egui::Context::default();
+		let mut images = Avatars::default();
+		images.set_animation(true);
+		let unsigned = "https://cdn.discordapp.com/attachments/1/2/synthetic.gif";
+		let signed = format!("{unsigned}?ex=1&is=2&hm=3");
+		// Saved favorites keep the address without its expiring signature.
+		let gif = model::Gif {
+			id: "favorite".into(),
+			title: String::new(),
+			url: unsigned.into(),
+			preview: unsigned.into(),
+			width: 720,
+			height: 578,
+		};
+		let embed = model::Embed {
+			kind: "image".into(),
+			thumbnail: Some(model::EmbedMedia {
+				url: Some(signed.clone()),
+				proxy_url: Some(signed.replace("cdn.discordapp.com", "media.discordapp.net")),
+				width: 720,
+				height: 578,
+				..Default::default()
+			}),
+			..Default::default()
+		};
+		ctx.run_ui(Default::default(), |ui| {
+			images.show_gif_embed(ui, &embed, Some(&gif), egui::vec2(320.0, 320.0), false);
+		})
+		.drop_without_applying_deltas();
+		let requests = images.take_requests();
+		assert!(!requests.is_empty());
+		assert!(
+			requests.iter().all(|key| key.contains("hm=3")),
+			"{requests:?}"
+		);
+	}
+
 	#[test]
 	fn gif_picker_requests_animation_advances_frames_and_respects_setting() {
 		let ctx = egui::Context::default();

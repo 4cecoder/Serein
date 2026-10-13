@@ -1,5 +1,22 @@
 # Local storage policy and audit
 
+## GIF preview recovery (October 13, 2026)
+
+Failed GIF animation downloads show a still during the existing five-second backoff,
+then retry the same rendition. Failure at one size does not suppress other sizes.
+Clip still downloads use the existing 16-MiB encoded clip limit. Failed clip stills
+settle without repeated downloads until their slot is evicted or the animation setting
+changes; temporary clip download failures share this behavior. Unsigned attachment
+favorites keep their picker placeholder without a request. Cached clips that provide
+an opening frame are not downloaded again merely because full animation decoding failed.
+Video animation decoding retains one temporary opening-frame copy for fallback instead
+of reopening the decoder when the remaining clip fails. This copy is bounded by the
+requested output edge and released with the decode job. Linux GIF preview startup and
+preroll waits share the three-second decode deadline; timeout stops the pipeline through
+the existing cleanup guard. Synchronous codec calls, conversion and teardown can exceed
+that deadline, so it is not a hard wall-clock limit. Shared decode permits remain held
+until the actual worker finishes. No detached decoder or new persistent data is added.
+
 ## Image cache settings and shared artwork (October 12, 2026)
 
 Each account's image disk cache now has two partitions. Media stays in
