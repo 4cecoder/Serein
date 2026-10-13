@@ -3785,7 +3785,9 @@ fn paint_collectibles(
 	} else {
 		ui.ctx().content_rect()
 	};
-	let painter = ui.painter().with_clip_rect(clip);
+	// The card's own clip stops at its constrained bounds; the frame overflows them on purpose.
+	let mut painter = ui.painter().clone();
+	painter.set_clip_rect(clip.intersect(ui.ctx().content_rect()));
 	let back = avatars.frame_shapes(ui.ctx(), frame, card, clip, false, demo);
 	painter.set(frame_back, egui::Shape::Vec(back));
 	for shape in avatars.frame_shapes(ui.ctx(), frame, card, clip, true, demo) {
