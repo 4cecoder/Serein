@@ -1811,7 +1811,7 @@ impl TimelineView {
 					&& state.timeline.iter().next().is_some();
 				let section_loaded = state.older_exhausted
 					|| matches!(state.read_marker(channel), Some(Some(read))
-						if state.timeline.row_ids().next().is_some_and(|first| first <= read));
+						if state.timeline.iter().next().is_some_and(|first| first.id <= read));
 				if arrived_on_live_edge && !section_loaded {
 					self.hold_read_ack = true;
 				}
@@ -7934,6 +7934,35 @@ mod tests {
 			"a seen arrival must not revive the dismissed banner: {labels:?}"
 		);
 		assert_eq!(view.mark_read.take(), Some(Id(41)));
+	}
+
+	#[test]
+	fn an_unread_section_above_the_page_keeps_its_banner_and_mark_as_read() {
+		let ctx = egui::Context::default();
+		let mut state = live_unread_channel(8);
+		state.older_exhausted = false;
+		// A deleted row below the marker keeps only its ID, not a loaded unread section.
+		state
+			.timeline
+			.insert(text_message(5), false, false)
+			.unwrap();
+		state.timeline.delete(Id(5)).unwrap();
+		assert_eq!(state.timeline.row_ids().next(), Some(Id(5)));
+		let mut view = TimelineView::default();
+		let labels = settle_banner(&ctx, &mut view, &mut state);
+		assert!(view.following && view.hold_read_ack && view.mark_read.is_none());
+		let pos = labels
+			.iter()
+			.find(|(text, _)| text == "Mark as read")
+			.map(|(_, rect)| rect.center())
+			.expect("the held unread banner offers Mark as read");
+		click_at(&ctx, &mut view, &mut state, pos);
+		assert_eq!(view.mark_channel_read.take(), Some(Id(20)));
+		let labels = banner_frame(&ctx, &mut view, &mut state, vec![], false);
+		assert!(
+			!labels.iter().any(|(text, _)| text == "Mark as read"),
+			"Mark as read left the banner up: {labels:?}"
+		);
 	}
 
 	/// A synthetic DM with messages 11..=40 loaded and a read marker at `read`.
